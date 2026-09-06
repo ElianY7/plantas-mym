@@ -1,0 +1,2978 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M&M — Renová tu Jardín</title>
+<link rel="icon" type="image/png" href="logo1.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&family=Montserrat:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+
+  /* ============================================================
+     PALETA VERDE PETRÓLEO BOTÁNICO
+     ============================================================ */
+  :root {
+    --bg: #182C34;
+    --bg-alt: #223C47;
+    --paper: #F4EFE6;
+    --paper-alt: #E6DECF;
+    --ink: #14252C;
+    --ink-soft: #4F6873;
+    --gold: #D8A25E;
+    --gold-glow: rgba(216, 162, 94, 0.14);
+    --rose: #C97064;
+    --whatsapp: #25D366;
+    --whatsapp-dark: #1DA851;
+    --line: rgba(244, 239, 230, 0.13);
+    --line-dark: rgba(20, 37, 44, 0.12);
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--paper);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: var(--gold); color: var(--ink); }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(circle at 10% 15%, rgba(47, 88, 101, 0.35), transparent 50%),
+      radial-gradient(circle at 90% 85%, var(--gold-glow), transparent 50%);
+  }
+
+  /* ============================================================
+     PANTALLA DE CARGA (SPLASH SCREEN)
+     ============================================================ */
+  .loader-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.55s ease;
+  }
+
+  .loader-screen.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .loader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .loader-logo-box {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .loader-halo {
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(216, 162, 94, 0.25) 0%, transparent 70%);
+    animation: haloBreath 2.2s infinite ease-in-out;
+  }
+
+  .loader-logo {
+    width: 72px;
+    height: auto;
+    max-height: 72px;
+    object-fit: contain;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.35));
+    animation: logoFloat 2.2s infinite ease-in-out;
+  }
+
+  .loader-caption {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    animation: textFade 1.6s infinite ease-in-out;
+  }
+
+  .loader-track {
+    width: 140px;
+    height: 3px;
+    background: rgba(244, 239, 230, 0.12);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .loader-bar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -50%;
+    width: 50%;
+    background: var(--gold);
+    border-radius: 999px;
+    animation: loaderSlide 1.4s infinite ease-in-out;
+  }
+
+  @keyframes logoFloat {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-7px) scale(1.04); }
+  }
+
+  @keyframes haloBreath {
+    0%, 100% { transform: scale(0.92); opacity: 0.35; }
+    50% { transform: scale(1.25); opacity: 0.85; }
+  }
+
+  @keyframes textFade {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes loaderSlide {
+    0% { left: -50%; width: 30%; }
+    50% { left: 35%; width: 55%; }
+    100% { left: 100%; width: 30%; }
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+    background: rgba(24, 44, 52, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .brand img {
+    height: 44px;
+    width: auto;
+    max-width: 52px;
+    object-fit: contain;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .brand .mark {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--paper);
+  }
+
+  .brand .tag {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    line-height: 1;
+    margin-top: 4px;
+  }
+
+  /* ---------- Botón del Carrito ---------- */
+  .cart-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--paper);
+    color: var(--ink);
+    border: none;
+    border-radius: 999px;
+    padding: 9px 18px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    transition: transform 0.15s ease, background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .cart-btn:hover { transform: translateY(-1px); background: #ffffff; }
+  .cart-btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+  .cart-btn.has-items {
+    background: var(--gold);
+    color: #14252C;
+    box-shadow: 0 4px 20px rgba(216, 162, 94, 0.45);
+    font-weight: 700;
+  }
+  .cart-btn.has-items:hover { background: #e6b26f; }
+  .cart-btn.has-items .cart-count { background: #14252C; color: #FFFFFF; }
+
+  @keyframes cartBump {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.22); }
+    50% { transform: scale(0.92); }
+    75% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+  }
+
+  .cart-btn.bump {
+    animation: cartBump 0.42s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .cart-count {
+    background: var(--rose);
+    color: var(--paper);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    z-index: 1;
+    padding: 42px 24px 26px;
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(30px, 5vw, 46px);
+    line-height: 1.15;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(244, 239, 230, 0.82);
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Banner Carrusel ---------- */
+  .banner-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1180px;
+    margin: 0 auto 26px;
+    padding: 0 24px;
+  }
+
+  .carousel-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 6;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  .carousel-track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .carousel-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    height: 100%;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  .carousel-slide:hover img { transform: scale(1.01); }
+
+  .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    color: rgba(244, 239, 230, 0.85);
+    border: none;
+    width: 44px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 32px;
+    line-height: 1;
+    transition: all 0.2s ease;
+    z-index: 5;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+    user-select: none;
+  }
+  .carousel-btn:hover {
+    color: var(--gold);
+    background: linear-gradient(to right, rgba(24, 44, 52, 0.5), transparent);
+  }
+  .carousel-btn.next:hover {
+    background: linear-gradient(to left, rgba(24, 44, 52, 0.5), transparent);
+  }
+  .carousel-btn.prev { left: 0; }
+  .carousel-btn.next { right: 0; }
+
+  .carousel-dots {
+    position: absolute;
+    bottom: 12px;
+    right: 24px;
+    display: flex;
+    gap: 7px;
+    z-index: 5;
+  }
+
+  .carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(244, 239, 230, 0.35);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .carousel-dot.active {
+    width: 22px;
+    background: var(--gold);
+  }
+
+  /* ---------- Botones de Contacto ---------- */
+  .direct-contact-wrap {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    max-width: 780px;
+    margin: 0 auto 26px;
+    padding: 0 20px;
+    flex-wrap: wrap;
+  }
+
+  .direct-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 14.5px;
+    padding: 12px 24px;
+    border-radius: 999px;
+    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    flex: 1 1 240px;
+    max-width: 320px;
+    text-align: center;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+  }
+
+  .direct-action-btn.wa-btn-color {
+    background: var(--whatsapp);
+    box-shadow: 0 4px 18px rgba(37, 211, 102, 0.28);
+  }
+  .direct-action-btn.wa-btn-color:hover {
+    background: var(--whatsapp-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(37, 211, 102, 0.42);
+  }
+
+  .direct-action-btn.ig-btn-color {
+    background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
+    box-shadow: 0 4px 18px rgba(225, 48, 108, 0.3);
+  }
+  .direct-action-btn.ig-btn-color:hover {
+    background: linear-gradient(135deg, #742e9e 0%, #e21313 50%, #e89c36 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(225, 48, 108, 0.45);
+  }
+
+  .direct-action-btn:active {
+    transform: scale(0.98);
+  }
+
+  .direct-action-btn:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Controles Superiores ---------- */
+  .controls-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 840px;
+    margin: 0 auto 30px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .search-row input {
+    width: 100%;
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    color: var(--paper);
+    border-radius: 999px;
+    padding: 13px 22px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-row input::placeholder { color: rgba(244, 239, 230, 0.45); }
+  .search-row input:focus-visible {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(216, 162, 94, 0.2);
+  }
+
+  .category-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .cat-pill {
+    background: rgba(244, 239, 230, 0.08);
+    border: 1px solid var(--line);
+    color: var(--paper);
+    font-family: 'Space Mono', monospace;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .cat-pill:hover {
+    background: rgba(244, 239, 230, 0.16);
+    border-color: rgba(244, 239, 230, 0.3);
+  }
+  .cat-pill.active {
+    background: var(--gold);
+    color: var(--ink);
+    border-color: var(--gold);
+    font-weight: 700;
+  }
+
+  .cat-pill.pill-novedades {
+    border-color: rgba(216, 162, 94, 0.4);
+    background: rgba(216, 162, 94, 0.12);
+  }
+
+  /* ---------- Contenedor Principal ---------- */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 10px 24px 24px;
+  }
+
+  .status {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(244, 239, 230, 0.7);
+    font-family: 'Space Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+
+  /* ---------- Secciones de Categorías ---------- */
+  .category-section { margin-bottom: 56px; }
+
+  /* ============================================================
+     SECCIÓN Y CARRUSEL DE NOVEDADES Y PROMOS
+     ============================================================ */
+  .category-section.novedades-section {
+    background: rgba(216, 162, 94, 0.05);
+    border: 1px dashed rgba(216, 162, 94, 0.35);
+    border-radius: var(--radius);
+    padding: 24px 22px 28px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    margin-bottom: 50px;
+  }
+  .category-section.novedades-section .category-title {
+    color: var(--gold);
+  }
+
+  .nov-carousel-wrap {
+    position: relative;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .nov-carousel-track {
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 8px 6px 16px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .nov-carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nov-carousel-track .card {
+    flex: 0 0 250px;
+    min-width: 250px;
+    max-width: 250px;
+  }
+
+  .nov-carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(20, 37, 44, 0.9);
+    color: var(--gold);
+    border: 1px solid rgba(216, 162, 94, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 26px;
+    line-height: 1;
+    z-index: 12;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+    user-select: none;
+  }
+  .nov-carousel-btn:hover {
+    background: var(--gold);
+    color: var(--ink);
+    transform: translateY(-50%) scale(1.08);
+  }
+  .nov-carousel-btn.prev { left: -16px; }
+  .nov-carousel-btn.next { right: -16px; }
+
+  .category-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding-bottom: 14px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .category-title-wrap { display: flex; flex-direction: column; gap: 4px; }
+
+  .category-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--paper);
+  }
+
+  .category-title .badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    background: rgba(216, 162, 94, 0.18);
+    color: var(--gold);
+    border: 1px solid rgba(216, 162, 94, 0.4);
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  .category-desc {
+    margin: 0;
+    font-size: 13.5px;
+    color: rgba(244, 239, 230, 0.65);
+  }
+
+  /* ---------- Subfiltros Generales ---------- */
+  .subcat-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .subcat-pill {
+    background: rgba(244, 239, 230, 0.07);
+    border: 1px solid rgba(244, 239, 230, 0.18);
+    color: rgba(244, 239, 230, 0.85);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 6px 13px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .subcat-pill:hover {
+    background: rgba(216, 162, 94, 0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .subcat-pill.active {
+    background: var(--gold);
+    color: var(--ink);
+    border-color: var(--gold);
+    font-weight: 700;
+  }
+
+  /* ---------- Grilla de Cards ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 22px;
+  }
+
+  .card {
+    position: relative;
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .card.out-of-stock .photo-wrap img { filter: grayscale(30%) opacity(0.9); }
+  
+  .card .out-of-stock-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(20, 37, 44, 0.88);
+    color: var(--gold);
+    border: 1px solid rgba(216, 162, 94, 0.4);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    z-index: 10;
+    backdrop-filter: blur(4px);
+  }
+
+  .card .novedad-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(135deg, #D8A25E 0%, #B67F38 100%);
+    color: #14252C;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+  }
+
+  .card .promo-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(135deg, #E25848 0%, #C97064 100%);
+    color: #FFFFFF;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(226, 88, 72, 0.4);
+  }
+
+  /* ============================================================
+     ESTILOS LLAMATIVOS PARA PRODUCTOS EN PROMO
+     ============================================================ */
+  .card.is-promo {
+    border: 2px solid rgba(226, 88, 72, 0.55);
+    box-shadow: 0 6px 20px rgba(226, 88, 72, 0.22);
+  }
+
+  .price-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .card.is-promo .price {
+    color: #D93829 !important;
+    font-size: 18.5px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em;
+    text-shadow: 0 1px 6px rgba(217, 56, 41, 0.22);
+  }
+
+  .promo-tag-pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+    background: #FEECEB;
+    color: #D93829;
+    border: 1px solid #F9B2AA;
+    padding: 2px 7px;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+    animation: pulsePromo 2.4s infinite ease-in-out;
+  }
+
+  @keyframes pulsePromo {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.06); opacity: 0.92; }
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.35), 0 0 20px rgba(216, 162, 94, 0.18);
+  }
+  .card.is-promo:hover {
+    box-shadow: 0 10px 28px rgba(0,0,0,0.35), 0 0 24px rgba(226, 88, 72, 0.32);
+  }
+
+  .card .photo-wrap {
+    aspect-ratio: 1/1;
+    background: var(--paper-alt);
+    overflow: hidden;
+    position: relative;
+  }
+  .card .photo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .card:hover .photo-wrap img { transform: scale(1.05); }
+
+  .card .photo-wrap.noimg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-soft);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .card .body {
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .card h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 18.5px;
+    margin: 0;
+    line-height: 1.25;
+  }
+
+  .card .specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex: 1;
+    align-content: flex-start;
+  }
+
+  /* ============================================================
+     SISTEMA DE TAGS Y ESCALAS CROMÁTICAS
+     ============================================================ */
+  .pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 10.5px;
+    background: var(--paper-alt);
+    color: var(--ink-soft);
+    padding: 3.5px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1.2;
+  }
+
+  .pill.pill-plant-tropical {
+    background: #E5F6ED !important;
+    color: #0F5E37 !important;
+    border: 1px solid #8BD6B0 !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-plant-floral {
+    background: #FCE8EE !important;
+    color: #9C1844 !important;
+    border: 1px solid #F6B1C5 !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-plant-arbusto {
+    background: #EAF1E7 !important;
+    color: #2F5831 !important;
+    border: 1px solid #B7CFB1 !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-plant-aromatica {
+    background: #E0F3F1 !important;
+    color: #00685D !important;
+    border: 1px solid #82CBC4 !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-plant-cactus {
+    background: #FBF0E3 !important;
+    color: #8C4E19 !important;
+    border: 1px solid #E6BD8D !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-plant-helecho {
+    background: #E3F1E7 !important;
+    color: #175436 !important;
+    border: 1px solid #99CEAD !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-plant-enredadera {
+    background: #E1F3F0 !important;
+    color: #10594F !important;
+    border: 1px solid #8ECEC2 !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-plant-frutal {
+    background: #FFF1DF !important;
+    color: #994B00 !important;
+    border: 1px solid #FAC187 !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-plant-palmera {
+    background: #FBF5DE !important;
+    color: #735702 !important;
+    border: 1px solid #E3CC74 !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-plant-default {
+    background: #EDEAE3 !important;
+    color: #3B4D45 !important;
+    border: 1px solid #C9C4B6 !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-pot-premium {
+    background: #FDF3DF !important;
+    color: #824E05 !important;
+    border: 1px solid #D8A25E !important;
+    font-weight: 700 !important;
+    box-shadow: 0 1px 4px rgba(216, 162, 94, 0.2);
+  }
+
+  .pill.pill-pot-roto {
+    background: #E3ECEF !important;
+    color: #173642 !important;
+    border: 1px solid #8FAEC0 !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-pot-plastica {
+    background: #E9ECE6 !important;
+    color: #2F443B !important;
+    border: 1px solid #C3CFCA !important;
+    font-weight: 500 !important;
+  }
+
+  .pill.pill-insumo-tierra {
+    background: #F4ECE1 !important;
+    color: #614221 !important;
+    border: 1px solid #C8B39B !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-insumo-fertilizante {
+    background: #E4F4EC !important;
+    color: #145934 !important;
+    border: 1px solid #8DCAB0 !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-insumo-adorno {
+    background: #F8E9E7 !important;
+    color: #863636 !important;
+    border: 1px solid #E1AAA5 !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-luz-alto {
+    background: #FFF4DC !important;
+    color: #794C05 !important;
+    border: 1px solid #E8C182 !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-luz-medio {
+    background: #ECEAE0 !important;
+    color: #4A453A !important;
+    border: 1px solid #CEC9BC !important;
+    font-weight: 500 !important;
+  }
+
+  .pill.pill-luz-bajo {
+    background: #E1E6E8 !important;
+    color: #283B43 !important;
+    border: 1px solid #BAC6CB !important;
+    font-weight: 500 !important;
+  }
+
+  .pill.pill-riego-alto {
+    background: #D5ECF8 !important;
+    color: #0A4363 !important;
+    border: 1px solid #84BEDE !important;
+    font-weight: 700 !important;
+  }
+
+  .pill.pill-riego-medio {
+    background: #E3EFF4 !important;
+    color: #1A4D62 !important;
+    border: 1px solid #A6C7D5 !important;
+    font-weight: 600 !important;
+  }
+
+  .pill.pill-riego-bajo {
+    background: #EEF5F7 !important;
+    color: #436674 !important;
+    border: 1px solid #CADFE6 !important;
+    font-weight: 500 !important;
+  }
+
+  .pill.pill-size {
+    background: #EBE5DA !important;
+    color: #4F6456 !important;
+    border: 1px solid #D7CFBE !important;
+  }
+
+  .card .price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 6px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line-dark);
+  }
+
+  .card .price {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .add-btn {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+  .add-btn:hover { background: #26434E; }
+  .add-btn:active { transform: scale(0.96); }
+  .add-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .qty-stepper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--ink);
+    border-radius: 999px;
+    padding: 4px 6px;
+  }
+  .qty-stepper button {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(244, 239, 230, 0.14);
+    color: var(--paper);
+    font-size: 14px;
+    cursor: pointer;
+    line-height: 1;
+    transition: background 0.15s ease;
+  }
+  .qty-stepper button:hover { background: rgba(244, 239, 230, 0.26); }
+  .qty-stepper button:active { transform: scale(0.92); }
+  .qty-stepper span {
+    color: var(--paper);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    min-width: 14px;
+    text-align: center;
+  }
+
+  /* ---------- Botón Ver Más ---------- */
+  .section-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+  }
+
+  .btn-toggle-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(244, 239, 230, 0.07);
+    color: var(--paper);
+    border: 1px solid var(--line);
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-toggle-more:hover {
+    background: rgba(244, 239, 230, 0.16);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* ---------- Modal de Detalle ---------- */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(16, 30, 36, 0.82);
+    backdrop-filter: blur(6px);
+    z-index: 60;
+    opacity: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: opacity 0.25s ease;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .modal-card {
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 20px;
+    max-width: 780px;
+    width: 100%;
+    max-height: 88vh;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    transform: scale(0.96) translateY(10px);
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+  }
+  .modal-overlay.open .modal-card { transform: scale(1) translateY(0); }
+  .modal-card.out-of-stock .modal-photo img { filter: grayscale(30%) opacity(0.9); }
+
+  .modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: rgba(20, 37, 44, 0.75);
+    color: var(--paper);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s ease;
+    z-index: 10;
+  }
+  .modal-close:hover { background: var(--ink); transform: rotate(90deg); }
+
+  .modal-photo {
+    background: var(--paper-alt);
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+    min-height: 280px;
+  }
+  .modal-photo img { width: 100%; height: 100%; object-fit: cover; }
+  .modal-photo.noimg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-soft);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+  }
+
+  .modal-content-wrap {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 88vh;
+    overflow: hidden;
+    background: var(--paper);
+  }
+
+  .modal-scroll-area {
+    padding: 24px 26px 18px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .modal-scroll-area::-webkit-scrollbar { width: 5px; }
+  .modal-scroll-area::-webkit-scrollbar-track { background: transparent; }
+  .modal-scroll-area::-webkit-scrollbar-thumb { background: rgba(20, 37, 44, 0.2); border-radius: 999px; }
+
+  .modal-title {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.2;
+    padding-right: 28px;
+  }
+
+  .modal-specs { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .modal-desc {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 0;
+    white-space: pre-line;
+    background: rgba(230, 222, 207, 0.45);
+    padding: 14px 16px;
+    border-radius: 12px;
+    border-left: 3px solid var(--gold);
+  }
+
+  .modal-footer {
+    padding: 16px 26px;
+    background: var(--paper-alt);
+    border-top: 1px dashed var(--line-dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .modal-price {
+    font-family: 'Space Mono', monospace;
+    font-size: 19px;
+    font-weight: 700;
+  }
+
+  /* ---------- Carrito Lateral ---------- */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(14, 25, 30, 0.7);
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .overlay.open { opacity: 1; pointer-events: auto; }
+
+  .drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: min(420px, 92vw);
+    background: var(--paper);
+    color: var(--ink);
+    z-index: 51;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+    display: flex;
+    flex-direction: column;
+    box-shadow: -8px 0 30px rgba(0,0,0,0.3);
+  }
+  .drawer.open { transform: translateX(0); }
+
+  .drawer-head {
+    padding: 22px 22px 16px;
+    border-bottom: 1px dashed var(--line-dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .drawer-head h2 { font-family: 'Fraunces', serif; font-size: 22px; margin: 0; }
+  .drawer-head .sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+  }
+  .close-btn {
+    background: none;
+    border: 1px solid var(--line-dark);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .close-btn:focus-visible { outline: 2px solid var(--gold); }
+
+  .drawer-items { flex: 1; overflow-y: auto; padding: 12px 22px; }
+  .drawer-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .line-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line-dark);
+  }
+  .line-item img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    background: var(--paper-alt);
+  }
+  .line-item .info { flex: 1; min-width: 0; }
+  .line-item .info .name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+  .line-item .info .unit {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .line-item .row-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+  .remove-link {
+    background: none;
+    border: none;
+    color: var(--rose);
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+  }
+
+  .drawer-foot {
+    padding: 18px 22px 24px;
+    border-top: 1px dashed var(--line-dark);
+    background: var(--paper-alt);
+  }
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+  }
+  .total-row .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+  }
+  .total-row .amount { font-family: 'Fraunces', serif; font-weight: 600; font-size: 26px; }
+
+  .wa-btn {
+    width: 100%;
+    background: var(--whatsapp);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 15px 20px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.15s ease;
+  }
+  .wa-btn:hover { background: var(--whatsapp-dark); }
+  .wa-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .wa-btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+  .wa-note {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  /* ============================================================
+     TARJETA DE CONSULTA ESPECIAL (PEDIDOS PERSONALIZADOS)
+     ============================================================ */
+  .special-request-card {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 10px auto 35px;
+    padding: 24px 22px 26px;
+    text-align: center;
+    background: rgba(216, 162, 94, 0.05);
+    border: 1px dashed var(--gold);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.22);
+  }
+
+  .special-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .special-request-card h3 {
+    font-family: 'Fraunces', serif;
+    color: var(--gold);
+    margin: 0 0 8px;
+    font-size: 21px;
+    font-weight: 600;
+  }
+
+  .special-request-card p {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: rgba(244, 239, 230, 0.85);
+    margin: 0 auto 18px;
+    max-width: 520px;
+  }
+
+  .btn-wa-compact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--whatsapp);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 10px 22px;
+    border-radius: 999px;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(37, 211, 102, 0.28);
+    transition: all 0.2s ease;
+  }
+  .btn-wa-compact:hover {
+    background: var(--whatsapp-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.42);
+  }
+  .btn-wa-compact:active {
+    transform: scale(0.97);
+  }
+
+  /* ---------- Footer ---------- */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 24px 20px 36px;
+    font-size: 12.5px;
+    color: rgba(244, 239, 230, 0.65);
+    border-top: 1px solid var(--line);
+  }
+
+  .footer-ig-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--gold);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    margin-bottom: 10px;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+  .footer-ig-link:hover {
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  /* ============================================================
+     RESPONSIVE CELULARES
+     ============================================================ */
+  @media (max-width: 680px) {
+    header { padding: 10px 14px; }
+    .brand { gap: 10px; }
+    .brand img { height: 36px; max-width: 44px; }
+    .brand .mark { font-size: 20px; }
+    .brand .tag { font-size: 8.5px; letter-spacing: 0.18em; }
+
+    .hero { padding: 26px 14px 18px; }
+    .banner-wrap { padding: 0 14px; margin-bottom: 18px; }
+
+    .direct-contact-wrap { padding: 0 14px; margin-bottom: 18px; gap: 8px; }
+    .direct-action-btn { font-size: 13.5px; padding: 11px 18px; max-width: 100%; flex: 1 1 100%; }
+
+    .controls-wrap { padding: 0 14px; margin-bottom: 22px; }
+    main { padding: 0 12px 20px; }
+
+    .carousel-container { aspect-ratio: 16 / 6; }
+    .carousel-btn { width: 34px; font-size: 26px; }
+    .carousel-dots { bottom: 8px; right: 14px; }
+
+    .category-section { margin-bottom: 40px; }
+    
+    .category-section.novedades-section {
+      padding: 16px 0 20px;
+      margin-bottom: 30px;
+    }
+    .category-section.novedades-section .category-header {
+      padding: 0 14px 10px;
+    }
+    
+    .nov-carousel-wrap {
+      margin-top: 4px;
+    }
+
+    .nov-carousel-track {
+      gap: 14px;
+      padding: 8px calc(50% - 120px) 16px;
+      scroll-snap-type: x mandatory;
+    }
+
+    .nov-carousel-track .card {
+      flex: 0 0 240px;
+      min-width: 240px;
+      max-width: 240px;
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
+    }
+
+    .nov-carousel-btn {
+      display: none;
+    }
+
+    .card.is-promo .price {
+      font-size: 15px !important;
+    }
+    .promo-tag-pill {
+      font-size: 8.5px;
+      padding: 1.5px 5px;
+    }
+
+    .category-header { margin-bottom: 14px; padding-bottom: 10px; gap: 8px; }
+    .category-title { font-size: 20px; }
+    .category-desc { font-size: 12px; }
+
+    .subcat-nav { width: 100%; gap: 5px; margin-top: 2px; }
+    .subcat-pill { font-size: 10px; padding: 5px 10px; }
+
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .card { border-radius: 10px; }
+    .card .body { padding: 10px 10px 12px; gap: 6px; }
+    .card h3 { font-size: 14px; line-height: 1.2; }
+    .card .specs { gap: 4px; }
+    .card .specs .pill { font-size: 9px; padding: 2.5px 6px; }
+    .card .price-row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      padding-top: 8px;
+      margin-top: 2px;
+    }
+    .card .price { font-size: 13.5px; text-align: left; }
+    .add-btn { width: 100%; padding: 6px 0; font-size: 11.5px; text-align: center; }
+
+    .qty-stepper { justify-content: space-between; padding: 2px 4px; }
+    .qty-stepper button { width: 22px; height: 22px; font-size: 12px; }
+    .qty-stepper span { font-size: 12px; }
+    .btn-toggle-more { font-size: 12px; padding: 8px 16px; width: 100%; justify-content: center; }
+
+    .modal-card {
+      grid-template-columns: 1fr;
+      max-width: 440px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-photo { height: 200px; min-height: auto; flex-shrink: 0; }
+    .modal-content-wrap { max-height: calc(90vh - 200px); flex: 1; }
+    .modal-scroll-area { padding: 16px 16px 12px; gap: 10px; }
+    .modal-title { font-size: 20px; }
+    .modal-footer { padding: 12px 16px; }
+
+    .special-request-card {
+      margin: 10px 14px 30px;
+      padding: 18px 14px 20px;
+    }
+    .special-request-card h3 {
+      font-size: 17px;
+    }
+    .special-request-card p {
+      font-size: 12.5px;
+    }
+    .btn-wa-compact {
+      width: 100%;
+      font-size: 13px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Loader Inicial -->
+<div id="loaderScreen" class="loader-screen" aria-live="polite" aria-busy="true">
+  <div class="loader-content">
+    <div class="loader-logo-box">
+      <div class="loader-halo"></div>
+      <img src="logo1.png" alt="M&M Cargando" class="loader-logo">
+    </div>
+    <span class="loader-caption">Preparando catálogo...</span>
+    <div class="loader-track">
+      <div class="loader-bar"></div>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="brand">
+    <img src="logo1.png" alt="Logo M&M" onerror="this.style.display='none'">
+    <div class="brand-text">
+      <span class="mark">M&M</span>
+      <span class="tag">RENOVÁ TU JARDÍN</span>
+    </div>
+  </div>
+
+  <button class="cart-btn" id="openCart" aria-haspopup="dialog">
+    🌿 Carrito
+    <span class="cart-count" id="cartCount">0</span>
+  </button>
+</header>
+
+<section class="hero">
+  <h1>Elegí tus plantas y macetas,<br><em>pedilas por WhatsApp</em></h1>
+  <p>Explorá nuestro catálogo, armá tu pedido y mandanos un WhatsApp para coordinar entrega y abonar.</p>
+</section>
+
+<!-- Carrusel de Banners -->
+<div class="banner-wrap">
+  <div class="carousel-container" id="promoCarousel" aria-label="Promociones y novedades">
+    <div class="carousel-track" id="carouselTrack"></div>
+    <button class="carousel-btn prev" id="carouselPrev" aria-label="Banner anterior">‹</button>
+    <button class="carousel-btn next" id="carouselNext" aria-label="Banner siguiente">›</button>
+    <div class="carousel-dots" id="carouselDots"></div>
+  </div>
+</div>
+
+<!-- Botones Directos de Acción (WhatsApp e Instagram) -->
+<div class="direct-contact-wrap">
+  <a href="https://wa.me/5493515605042?text=¡Hola%20M%26M!%20Quiero%20hacerles%20una%20consulta." target="_blank" rel="noopener noreferrer" class="direct-action-btn wa-btn-color" id="directWaLink" aria-label="Hablanos por WhatsApp">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.85 9.85 0 0 0 12.04 2m0 1.8a8.1 8.1 0 0 1 5.75 2.38 8.07 8.07 0 0 1 2.38 5.73c0 4.48-3.65 8.12-8.14 8.12a8.1 8.1 0 0 1-4.14-1.13l-.3-.17-3.11.81.83-3.03-.19-.31a8.06 8.06 0 0 1-1.24-4.32c0-4.48 3.65-8.08 8.16-8.08M8.53 6.85c-.17 0-.44.06-.67.31s-.88.86-.88 2.09.9 2.42 1.03 2.6 1.77 2.78 4.35 3.9c2.15.94 2.59.75 3.06.71.47-.05 1.5-.61 1.72-1.2s.21-1.09.15-1.2-.24-.17-.5-.29-1.53-.75-1.77-.84-.41-.13-.59.13-.68.84-.83 1.02-.31.19-.57.06a7.2 7.2 0 0 1-2.12-1.31 7.9 7.9 0 0 1-1.47-1.82c-.15-.26-.01-.4.12-.53.12-.12.27-.31.4-.47.13-.16.17-.27.26-.45.09-.19.04-.35-.02-.48-.07-.13-.59-1.5-.82-2.05-.21-.52-.43-.46-.6-.47Z"/></svg>
+    <span>Hablanos por WhatsApp</span>
+  </a>
+
+  <a href="https://www.instagram.com/plantasmym.cba/" target="_blank" rel="noopener noreferrer" class="direct-action-btn ig-btn-color" aria-label="Visitar perfil de Instagram">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+    <span>Seguinos en Instagram</span>
+  </a>
+</div>
+
+<div class="controls-wrap">
+  <div class="search-row">
+    <input type="text" id="searchInput" placeholder="Buscar por planta, maceta, tierra o abono…" aria-label="Buscar un producto">
+  </div>
+  <div class="category-nav" id="categoryNav">
+    <button class="cat-pill active" data-cat="all">Todas</button>
+    <button class="cat-pill pill-novedades" data-cat="novedades">✨ Novedades y Promos</button>
+    <button class="cat-pill" data-cat="exterior">☀️ Exterior</button>
+    <button class="cat-pill" data-cat="interior_exterior">🏡 Exterior/Interior</button>
+    <button class="cat-pill" data-cat="interior">🪴 Interior</button>
+    <button class="cat-pill" data-cat="macetas">🏺 Macetas</button>
+    <button class="cat-pill" data-cat="tierras_adornos">🌱 Tierras y Adornos</button>
+  </div>
+</div>
+
+<main>
+  <div id="status" class="status">Cargando catálogo…</div>
+  <div id="catalogContainer"></div>
+</main>
+
+<!-- Tarjeta de Consulta Personalizada -->
+<section class="special-request-card">
+  <div class="special-badge">🌿 Pedidos Especiales & Asesoramiento</div>
+  <h3>¿Buscás una planta, medida o maceta en especial?</h3>
+  <p>Escribinos por WhatsApp y te la conseguimos o asesoramos para encontrar la opción ideal para tu espacio.</p>
+  <a href="https://wa.me/5493515605042?text=¡Hola%20M%26M!%20Busco%20una%20planta,%20medida%20o%20maceta%20en%20especial." target="_blank" rel="noopener noreferrer" class="btn-wa-compact" aria-label="Consultar por WhatsApp">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.85 9.85 0 0 0 12.04 2m0 1.8a8.1 8.1 0 0 1 5.75 2.38 8.07 8.07 0 0 1 2.38 5.73c0 4.48-3.65 8.12-8.14 8.12a8.1 8.1 0 0 1-4.14-1.13l-.3-.17-3.11.81.83-3.03-.19-.31a8.06 8.06 0 0 1-1.24-4.32c0-4.48 3.65-8.08 8.16-8.08M8.53 6.85c-.17 0-.44.06-.67.31s-.88.86-.88 2.09.9 2.42 1.03 2.6 1.77 2.78 4.35 3.9c2.15.94 2.59.75 3.06.71.47-.05 1.5-.61 1.72-1.2s.21-1.09.15-1.2-.24-.17-.5-.29-1.53-.75-1.77-.84-.41-.13-.59.13-.68.84-.83 1.02-.31.19-.57.06a7.2 7.2 0 0 1-2.12-1.31 7.9 7.9 0 0 1-1.47-1.82c-.15-.26-.01-.4.12-.53.12-.12.27-.31.4-.47.13-.16.17-.27.26-.45.09-.19.04-.35-.02-.48-.07-.13-.59-1.5-.82-2.05-.21-.52-.43-.46-.6-.47Z"/></svg>
+    <span>Consultar por WhatsApp</span>
+  </a>
+</section>
+
+<footer>
+  <a href="https://www.instagram.com/plantasmym.cba/" target="_blank" rel="noopener noreferrer" class="footer-ig-link" aria-label="Instagram de Plantas M&M">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+    <span>@plantasmym.cba</span>
+  </a>
+  <div>Los pedidos se completan por WhatsApp — no se realizan pagos automáticos en esta página.</div>
+</footer>
+
+<!-- Modal de Detalle de Producto -->
+<div class="modal-overlay" id="productModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-card" id="modalContentCard">
+    <button class="modal-close" id="closeProductModal" aria-label="Cerrar detalle">✕</button>
+    <div class="modal-photo" id="modalPhoto"></div>
+    <div class="modal-content-wrap">
+      <div class="modal-scroll-area">
+        <h2 class="modal-title" id="modalTitle"></h2>
+        <div class="modal-specs" id="modalSpecs"></div>
+        <p class="modal-desc" id="modalDesc"></p>
+      </div>
+      <div class="modal-footer">
+        <span class="modal-price" id="modalPrice"></span>
+        <div id="modalQtyControl"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Carrito Lateral -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-label="Carrito de compra" aria-modal="true">
+  <div class="drawer-head">
+    <div>
+      <h2>Tu pedido</h2>
+      <div class="sub" id="drawerSub">0 artículos</div>
+    </div>
+    <button class="close-btn" id="closeCart" aria-label="Cerrar carrito">✕</button>
+  </div>
+  <div class="drawer-items" id="drawerItems"></div>
+  <div class="drawer-foot">
+    <div class="total-row">
+      <span class="label">Total</span>
+      <span class="amount" id="totalAmount">$0</span>
+    </div>
+    <div class="wa-note" id="totalNote" style="display:none;margin-top:-8px;margin-bottom:14px;">* No incluye artículos a consultar — el precio se coordina por WhatsApp.</div>
+    <button class="wa-btn" id="sendWa" disabled>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.85 9.85 0 0 0 12.04 2m0 1.8a8.1 8.1 0 0 1 5.75 2.38 8.07 8.07 0 0 1 2.38 5.73c0 4.48-3.65 8.12-8.14 8.12a8.1 8.1 0 0 1-4.14-1.13l-.3-.17-3.11.81.83-3.03-.19-.31a8.06 8.06 0 0 1-1.24-4.32c0-4.48 3.65-8.08 8.16-8.08M8.53 6.85c-.17 0-.44.06-.67.31s-.88.86-.88 2.09.9 2.42 1.03 2.6 1.77 2.78 4.35 3.9c2.15.94 2.59.75 3.06.71.47-.05 1.5-.61 1.72-1.2s.21-1.09.15-1.2-.24-.17-.5-.29-1.53-.75-1.77-.84-.41-.13-.59.13-.68.84-.83 1.02-.31.19-.57.06a7.2 7.2 0 0 1-2.12-1.31 7.9 7.9 0 0 1-1.47-1.82c-.15-.26-.01-.4.12-.53.12-.12.27-.31.4-.47.13-.16.17-.27.26-.45.09-.19.04-.35-.02-.48-.07-.13-.59-1.5-.82-2.05-.21-.52-.43-.46-.6-.47Z"/></svg>
+      Enviar pedido por WhatsApp
+    </button>
+    <p class="wa-note">Se abrirá WhatsApp con el detalle de tu pedido listo para enviar.</p>
+  </div>
+</aside>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN PRINCIPAL
+   ============================================================ */
+const CONFIG = {
+  SHEET_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=0&single=true&output=csv",
+  POTS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=799011311&single=true&output=csv",
+  SUPPLIES_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=1683874466&single=true&output=csv",
+  BANNERS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=904731452&single=true&output=csv",
+  WHATSAPP_NUMBER: "5493515605042",
+  SHOP_NAME: "M&M",
+  INITIAL_ITEMS_PER_CATEGORY: 4
+};
+
+const CATEGORIES_DEF = [
+  { id: 'exterior', name: 'Exterior', icon: '☀️', desc: 'Plantas de exterior para sol o sombra.' },
+  { id: 'interior_exterior', name: 'Exterior/Interior', icon: '🏡', desc: 'Plantas versátiles que se adaptan tanto adentro como afuera.' },
+  { id: 'interior', name: 'Interior', icon: '🪴', desc: 'Plantas de hojas vistosas para iluminar tus ambientes.' },
+  { id: 'macetas', name: 'Macetas', icon: '🏺', desc: 'Macetas plásticas, jardineras, platos y accesorios.' },
+  { id: 'tierras_adornos', name: 'Tierras, Fertilizantes y Adornos', icon: '🌱', desc: 'Sustratos, abonos, fertilizantes y elementos para decorar tus plantas.' }
+];
+
+let PRODUCTS = [];
+let CART = {};
+let activeCategoryFilter = 'all';
+let activePotSubcategory = 'all';
+let activeSupplySubcategory = 'all';
+let activePlantSubcategories = {
+  exterior: 'all',
+  interior_exterior: 'all',
+  interior: 'all'
+};
+let searchQuery = '';
+let currentModalProduct = null;
+let expandedCategories = { exterior: false, interior_exterior: false, interior: false, macetas: false, tierras_adornos: false };
+
+let currentSlide = 0;
+let carouselTimer = null;
+let novCarouselTimer = null;
+
+function hideLoader() {
+  const loader = document.getElementById('loaderScreen');
+  if (!loader) return;
+  loader.classList.add('fade-out');
+  loader.setAttribute('aria-busy', 'false');
+  setTimeout(() => {
+    loader.remove();
+  }, 600);
+}
+
+function money(n) {
+  if (n === null || n === undefined) return 'Consultar';
+  const num = Number(n) || 0;
+  return '$' + num.toLocaleString('es-AR');
+}
+
+/* Optimizado: permite solicitar tamaño de miniatura (400px por defecto) */
+function driveDirectLink(url, size = 400) {
+  if (!url) return '';
+  url = url.trim();
+  const patterns = [
+    /\/file\/d\/([a-zA-Z0-9_-]+)/,
+    /[?&]id=([a-zA-Z0-9_-]+)/,
+    /\/d\/([a-zA-Z0-9_-]+)/
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m && m[1]) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w${size}`;
+  }
+  return url;
+}
+
+function classifyCategory(row) {
+  const get = (keys) => {
+    for (const k of Object.keys(row)) {
+      const clean = k.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      if (keys.includes(clean)) return row[k];
+    }
+    return '';
+  };
+  
+  const interior = String(get(['interior'])).trim().toLowerCase();
+  const exterior = String(get(['exterior'])).trim().toLowerCase();
+
+  if (interior === 'si' && exterior === 'si') return 'interior_exterior';
+  if (interior === 'si' && exterior !== 'si') return 'interior';
+  return 'exterior';
+}
+
+function cleanPlantSubcat(raw) {
+  if (!raw) return '';
+  const s = raw.trim();
+  if (/aromatica|huerta/i.test(s)) return 'Aromáticas/Huerta';
+  if (/cactus|sucu/i.test(s)) return 'Cactus/Suculentas';
+  if (/tropical/i.test(s)) return 'Tropical';
+  if (/floral|flor/i.test(s)) return 'Floral';
+  if (/arbusto/i.test(s)) return 'Arbusto';
+  if (/helecho/i.test(s)) return 'Helecho';
+  if (/enredadera/i.test(s)) return 'Enredadera';
+  if (/frutal/i.test(s)) return 'Frutal';
+  if (/palmera/i.test(s)) return 'Palmera';
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function parseTipoDestacado(val) {
+  if (!val) return null;
+  const s = String(val).trim().toLowerCase();
+  if (s.includes('promo') || s.includes('oferta') || s.includes('descuento')) return 'promo';
+  if (['si', 'sí', 'true', '1', 'x', 'novedad', 'nuevo', 'nueva'].includes(s) || s.includes('novedad')) return 'novedad';
+  return null;
+}
+
+function normalizePlantRow(row) {
+  const get = (keys) => {
+    for (const k of Object.keys(row)) {
+      const clean = k.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      if (keys.includes(clean)) return row[k];
+    }
+    return '';
+  };
+
+  const precioRaw = String(get(['precio','price']) || '').trim();
+  const soloDigitos = precioRaw.replace(/[^0-9]/g, '');
+  const esNoPublicado = /no\s*public|^np$|consult/i.test(precioRaw);
+  let precio = (!soloDigitos || esNoPublicado) ? null : parseInt(soloDigitos, 10);
+
+  const fotoUrl = get(['fotourl','urlfoto','linkfoto','foto_url']);
+  const fotoCruda = get(['foto','imagen','image','photo']);
+  const fotoOriginal = (fotoUrl || fotoCruda || '').trim();
+  
+  const stockVal = String(get(['stock']) || '').trim().toLowerCase();
+  const hasStock = stockVal !== 'no';
+
+  if (!hasStock) {
+    precio = null;
+  }
+
+  const rawSubcat = (get(['categoria','subcategoria','tipo','clasificacion']) || '').trim();
+  const subcategoria = cleanPlantSubcat(rawSubcat);
+  const novRaw = get(['novedad','novedades','promo','promocion','destacado']);
+
+  return {
+    nombre: (get(['nombre','producto','planta']) || '').trim(),
+    categoria: classifyCategory(row),
+    subcategoria: subcategoria,
+    precio,
+    descripcion: (get(['descripcion','description','detalle','detalles']) || '').trim(),
+    fotoOriginal: fotoOriginal,
+    foto: driveDirectLink(fotoOriginal, 400),
+    tamano: (get(['tamano','size','maceta']) || '').trim(),
+    luz: (get(['luz','light']) || '').trim(),
+    riego: (get(['riego','watering']) || '').trim(),
+    cuidado: (get(['cuidado','care']) || '').trim(),
+    hasStock: hasStock,
+    tipoDestacado: parseTipoDestacado(novRaw)
+  };
+}
+
+function normalizePotRow(row) {
+  const get = (keys) => {
+    for (const k of Object.keys(row)) {
+      const clean = k.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      if (keys.includes(clean)) return row[k];
+    }
+    return '';
+  };
+
+  const precioRaw = String(get(['precio','price']) || '').trim();
+  const soloDigitos = precioRaw.replace(/[^0-9]/g, '');
+  const esNoPublicado = /no\s*public|^np$|consult/i.test(precioRaw);
+  let precio = (!soloDigitos || esNoPublicado) ? null : parseInt(soloDigitos, 10);
+
+  const fotoUrl = get(['fotourl','urlfoto','linkfoto','foto_url']);
+  const fotoCruda = get(['foto','imagen','image','photo']);
+  const fotoOriginal = (fotoUrl || fotoCruda || '').trim();
+  
+  const stockVal = String(get(['stock']) || '').trim().toLowerCase();
+  const hasStock = stockVal !== 'no';
+
+  if (!hasStock) {
+    precio = null;
+  }
+
+  const subcategoria = (get(['categoria','subcategoria','tipo','material']) || '').trim();
+  const novRaw = get(['novedad','novedades','promo','promocion','destacado']);
+
+  return {
+    nombre: (get(['nombre','producto','maceta']) || '').trim(),
+    categoria: 'macetas',
+    subcategoria: subcategoria,
+    precio,
+    descripcion: (get(['descripcion','detalle']) || 'Maceta / accesorio para plantas y jardinería.').trim(),
+    fotoOriginal: fotoOriginal,
+    foto: driveDirectLink(fotoOriginal, 400),
+    tamano: (get(['tamano','medida']) || '').trim(),
+    luz: '',
+    riego: '',
+    cuidado: '',
+    hasStock: hasStock,
+    tipoDestacado: parseTipoDestacado(novRaw)
+  };
+}
+
+function normalizeSupplyRow(row) {
+  const get = (keys) => {
+    for (const k of Object.keys(row)) {
+      const clean = k.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      if (keys.includes(clean)) return row[k];
+    }
+    return '';
+  };
+
+  const precioRaw = String(get(['precio','price']) || '').trim();
+  const soloDigitos = precioRaw.replace(/[^0-9]/g, '');
+  const esNoPublicado = /no\s*public|^np$|consult/i.test(precioRaw);
+  let precio = (!soloDigitos || esNoPublicado) ? null : parseInt(soloDigitos, 10);
+
+  const fotoUrl = get(['fotourl','urlfoto','linkfoto','foto_url']);
+  const fotoCruda = get(['foto','imagen','image','photo']);
+  const fotoOriginal = (fotoUrl || fotoCruda || '').trim();
+  
+  const stockVal = String(get(['stock']) || '').trim().toLowerCase();
+  const hasStock = stockVal !== 'no';
+
+  if (!hasStock) {
+    precio = null;
+  }
+
+  const rawCat = (get(['categoria','subcategoria','tipo']) || '').trim();
+  const nombre = (get(['nombre','producto']) || '').trim();
+  
+  let subcategoria = rawCat;
+  const lowerRaw = rawCat.toLowerCase();
+  const lowerNom = nombre.toLowerCase();
+
+  if (lowerRaw.includes('adorno')) {
+    subcategoria = 'Adorno';
+  } else if (lowerRaw.includes('tierra') && lowerRaw.includes('fertili')) {
+    const esFertilizante = /triple|sulfato|jabon|jabón|diatomea|fertilizante|abono|insecticida|plaguicida/i.test(lowerNom);
+    subcategoria = esFertilizante ? 'Fertilizante' : 'Tierra';
+  } else if (lowerRaw.includes('fertili')) {
+    subcategoria = 'Fertilizante';
+  } else if (lowerRaw.includes('tierra') || lowerRaw.includes('sustrato')) {
+    subcategoria = 'Tierra';
+  } else if (!subcategoria) {
+    subcategoria = 'Insumo';
+  }
+
+  const novRaw = get(['novedad','novedades','promo','promocion','destacado']);
+
+  return {
+    nombre,
+    categoria: 'tierras_adornos',
+    subcategoria,
+    precio,
+    descripcion: (get(['descripcion','detalle']) || `${subcategoria} para el cuidado, nutrición y decoración de tus plantas.`).trim(),
+    fotoOriginal: fotoOriginal,
+    foto: driveDirectLink(fotoOriginal, 400),
+    tamano: (get(['tamano','medida','presentacion','volumen']) || '').trim(),
+    luz: '',
+    riego: '',
+    cuidado: '',
+    hasStock: hasStock,
+    tipoDestacado: parseTipoDestacado(novRaw)
+  };
+}
+
+function getPlantSubcategories(catId) {
+  const preferredOrder = [
+    'Arbusto', 'Floral', 'Tropical', 'Aromáticas/Huerta',
+    'Cactus/Suculentas', 'Helecho', 'Enredadera', 'Frutal', 'Palmera'
+  ];
+  const set = new Set();
+  PRODUCTS.filter(p => p.categoria === catId).forEach(p => {
+    if (p.subcategoria) set.add(p.subcategoria);
+  });
+  const list = Array.from(set);
+  return list.sort((a, b) => {
+    const ia = preferredOrder.indexOf(a);
+    const ib = preferredOrder.indexOf(b);
+    if (ia !== -1 && ib !== -1) return ia - ib;
+    if (ia !== -1) return -1;
+    if (ib !== -1) return 1;
+    return a.localeCompare(b);
+  });
+}
+
+function getPotSubcategories() {
+  const map = new Map();
+  PRODUCTS.filter(p => p.categoria === 'macetas').forEach(p => {
+    if (p.subcategoria) {
+      const key = p.subcategoria.trim().toLowerCase();
+      if (!map.has(key)) {
+        map.set(key, p.subcategoria.trim());
+      }
+    }
+  });
+  return Array.from(map.values());
+}
+
+function getSupplySubcategories() {
+  const order = ['Tierra', 'Fertilizante', 'Adorno'];
+  const set = new Set();
+  PRODUCTS.filter(p => p.categoria === 'tierras_adornos').forEach(p => {
+    if (p.subcategoria) set.add(p.subcategoria);
+  });
+  const found = Array.from(set);
+  return found.sort((a, b) => {
+    const ia = order.indexOf(a);
+    const ib = order.indexOf(b);
+    if (ia !== -1 && ib !== -1) return ia - ib;
+    if (ia !== -1) return -1;
+    if (ib !== -1) return 1;
+    return a.localeCompare(b);
+  });
+}
+
+function getPlantTagHtml(subcat) {
+  if (!subcat) return '';
+  const s = subcat.trim().toLowerCase();
+  if (s.includes('tropical')) return `<span class="pill pill-plant-tropical">🌿 ${subcat}</span>`;
+  if (s.includes('flor')) return `<span class="pill pill-plant-floral">🌸 ${subcat}</span>`;
+  if (s.includes('arbusto')) return `<span class="pill pill-plant-arbusto">🌳 ${subcat}</span>`;
+  if (s.includes('aromatica') || s.includes('huerta')) return `<span class="pill pill-plant-aromatica">🍃 ${subcat}</span>`;
+  if (s.includes('cactus') || s.includes('sucu')) return `<span class="pill pill-plant-cactus">🌵 ${subcat}</span>`;
+  if (s.includes('helecho')) return `<span class="pill pill-plant-helecho">🪴 ${subcat}</span>`;
+  if (s.includes('enredadera')) return `<span class="pill pill-plant-enredadera">🪜 ${subcat}</span>`;
+  if (s.includes('frutal')) return `<span class="pill pill-plant-frutal">🍋 ${subcat}</span>`;
+  if (s.includes('palmera')) return `<span class="pill pill-plant-palmera">🌴 ${subcat}</span>`;
+  return `<span class="pill pill-plant-default">🌱 ${subcat}</span>`;
+}
+
+function getPotTagHtml(subcat) {
+  const s = (subcat || '').trim().toLowerCase();
+  if (s.includes('premium')) return `<span class="pill pill-pot-premium">⭐ ${subcat || 'Premium'}</span>`;
+  if (s.includes('rotomoldeada')) return `<span class="pill pill-pot-roto">🔄 ${subcat || 'Rotomoldeada'}</span>`;
+  if (s.includes('plastic') || s.includes('plástic')) return `<span class="pill pill-pot-plastica">🪴 ${subcat || 'Plástica'}</span>`;
+  return `<span class="pill pill-pot-plastica">🏺 ${subcat || 'Maceta'}</span>`;
+}
+
+function getSupplyTagHtml(subcat) {
+  const s = (subcat || '').trim().toLowerCase();
+  if (s.includes('adorno')) return `<span class="pill pill-insumo-adorno">✨ ${subcat || 'Adorno'}</span>`;
+  if (s.includes('fertili') || s.includes('nutri') || s.includes('triple') || s.includes('sulfato') || s.includes('jabon')) {
+    return `<span class="pill pill-insumo-fertilizante">🧪 ${subcat || 'Fertilizante'}</span>`;
+  }
+  if (s.includes('tierra') || s.includes('sustrato') || s.includes('humus') || s.includes('perlita')) {
+    return `<span class="pill pill-insumo-tierra">🌱 ${subcat || 'Tierra'}</span>`;
+  }
+  return `<span class="pill pill-insumo-tierra">📦 ${subcat || 'Insumo'}</span>`;
+}
+
+function getLuzTagHtml(luz, isModal = false) {
+  if (!luz) return '';
+  const l = luz.trim().toLowerCase();
+  let icon = '☀️';
+  let cls = 'pill-luz-alto';
+
+  if (l.includes('sombra') && !l.includes('media') && !l.includes('semi')) {
+    icon = '☁️';
+    cls = 'pill-luz-bajo';
+  } else if (l.includes('media') || l.includes('indirect') || l.includes('semi') || l.includes('filtrada')) {
+    icon = '🌤️';
+    cls = 'pill-luz-medio';
+  } else {
+    icon = '☀️';
+    cls = 'pill-luz-alto';
+  }
+
+  const label = isModal ? `Luz: ${luz}` : luz;
+  return `<span class="pill ${cls}">${icon} ${label}</span>`;
+}
+
+function getRiegoTagHtml(riego, isModal = false) {
+  if (!riego) return '';
+  const r = riego.trim().toLowerCase();
+  let icon = '💧';
+  let cls = 'pill-riego-bajo';
+
+  if (r.includes('abundant') || r.includes('frecuent') || r.includes('diario') || r.includes('alto') || r.includes('mucho') || r.includes('tres') || r.includes('3')) {
+    icon = '💧💧💧';
+    cls = 'pill-riego-alto';
+  } else if (r.includes('moderad') || r.includes('medio') || r.includes('regular') || r.includes('normal') || r.includes('semanal') || r.includes('dos') || r.includes('2')) {
+    icon = '💧💧';
+    cls = 'pill-riego-medio';
+  } else {
+    icon = '💧';
+    cls = 'pill-riego-bajo';
+  }
+
+  const label = isModal ? `Riego: ${riego}` : riego;
+  return `<span class="pill ${cls}">${icon} ${label}</span>`;
+}
+
+function renderStatus(msg) {
+  const el = document.getElementById('status');
+  if (msg) {
+    el.style.display = 'block';
+    el.innerHTML = msg;
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+/* ============================================================
+   CARRUSEL DINÁMICO DE BANNERS (ALTA RESOLUCIÓN Y PRIORIDAD)
+   ============================================================ */
+function loadBannersFromSheet() {
+  if (!CONFIG.BANNERS_CSV_URL) {
+    document.querySelector('.banner-wrap').style.display = 'none';
+    return;
+  }
+  
+  Papa.parse(CONFIG.BANNERS_CSV_URL, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: (results) => {
+      const banners = results.data.map(row => {
+        const get = (keys) => {
+          for (const k of Object.keys(row)) {
+            const clean = k.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+            if (keys.includes(clean)) return row[k];
+          }
+          return '';
+        };
+        const fotoUrl = get(['foto', 'imagen', 'link', 'fotourl']);
+        return {
+          foto: driveDirectLink(fotoUrl, 1600),
+          productoVinculado: get(['producto', 'planta', 'link', 'vinculo'])
+        };
+      }).filter(b => b.foto);
+      
+      initPromoCarousel(banners);
+    }
+  });
+}
+
+function initPromoCarousel(banners) {
+  const track = document.getElementById('carouselTrack');
+  const dotsContainer = document.getElementById('carouselDots');
+
+  if (!banners || !banners.length) {
+    document.querySelector('.banner-wrap').style.display = 'none';
+    return;
+  }
+
+  track.innerHTML = '';
+  dotsContainer.innerHTML = '';
+
+  banners.forEach((banner, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'carousel-slide';
+    
+    if (banner.productoVinculado) {
+      slide.addEventListener('click', () => {
+        const p = PRODUCTS.find(prod => prod.nombre.toLowerCase() === banner.productoVinculado.toLowerCase());
+        if (p) {
+          openProductModal(p);
+        } else {
+          document.getElementById('searchInput').value = banner.productoVinculado;
+          searchQuery = banner.productoVinculado;
+          renderCatalog();
+          document.getElementById('searchInput').scrollIntoView({behavior: 'smooth'});
+        }
+      });
+    }
+
+    slide.innerHTML = `<img src="${banner.foto}" alt="Banner promocional" fetchpriority="${i === 0 ? 'high' : 'auto'}" loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async">`;
+    track.appendChild(slide);
+
+    const dot = document.createElement('button');
+    dot.className = `carousel-dot ${i === 0 ? 'active' : ''}`;
+    dot.setAttribute('aria-label', `Ir al banner ${i + 1}`);
+    dot.addEventListener('click', () => goToSlide(i));
+    dotsContainer.appendChild(dot);
+  });
+
+  if (banners.length <= 1) {
+    document.getElementById('carouselPrev').style.display = 'none';
+    document.getElementById('carouselNext').style.display = 'none';
+    dotsContainer.style.display = 'none';
+    return;
+  }
+
+  document.getElementById('carouselPrev').addEventListener('click', prevSlide);
+  document.getElementById('carouselNext').addEventListener('click', nextSlide);
+
+  const container = document.getElementById('promoCarousel');
+  container.addEventListener('mouseenter', stopCarouselAuto);
+  container.addEventListener('mouseleave', startCarouselAuto);
+
+  startCarouselAuto();
+}
+
+function updateCarouselUI() {
+  const track = document.getElementById('carouselTrack');
+  const dots = document.querySelectorAll('.carousel-dot');
+  track.style.transform = `translateX(-${currentSlide * 100}%)`;
+  dots.forEach((dot, i) => {
+    dot.classList.toggle('active', i === currentSlide);
+  });
+}
+
+function nextSlide() {
+  const slides = document.querySelectorAll('.carousel-slide');
+  if (!slides.length) return;
+  currentSlide = (currentSlide + 1) % slides.length;
+  updateCarouselUI();
+}
+
+function prevSlide() {
+  const slides = document.querySelectorAll('.carousel-slide');
+  if (!slides.length) return;
+  currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+  updateCarouselUI();
+}
+
+function goToSlide(i) {
+  currentSlide = i;
+  updateCarouselUI();
+  restartCarouselAuto();
+}
+
+function startCarouselAuto() {
+  if (carouselTimer) clearInterval(carouselTimer);
+  carouselTimer = setInterval(nextSlide, 5000);
+}
+
+function stopCarouselAuto() {
+  if (carouselTimer) clearInterval(carouselTimer);
+}
+
+function restartCarouselAuto() {
+  stopCarouselAuto();
+  startCarouselAuto();
+}
+
+/* ============================================================
+   CARRUSEL INFINITO DE NOVEDADES Y PROMOS
+   ============================================================ */
+function initNovedadesCarousel(numOriginalItems) {
+  const track = document.getElementById('novTrack');
+  const prevBtn = document.getElementById('novPrev');
+  const nextBtn = document.getElementById('novNext');
+  if (!track || numOriginalItems <= 1) return;
+
+  const calculateMetrics = () => {
+    const cards = track.querySelectorAll('.card');
+    if (cards.length < 2) return { cardStep: 268, setWidth: 268 * numOriginalItems };
+    const cardStep = cards[1].offsetLeft - cards[0].offsetLeft;
+    const setWidth = cardStep * numOriginalItems;
+    return { cardStep, setWidth };
+  };
+
+  let { setWidth } = calculateMetrics();
+
+  track.style.scrollBehavior = 'auto';
+  track.scrollLeft = setWidth;
+  track.style.scrollBehavior = 'smooth';
+
+  let scrollTimeout = null;
+  const handleInfiniteJump = () => {
+    const { setWidth: curSetWidth } = calculateMetrics();
+    if (curSetWidth <= 0) return;
+
+    if (track.scrollLeft >= curSetWidth * 2) {
+      track.style.scrollBehavior = 'auto';
+      track.scrollLeft -= curSetWidth;
+      track.style.scrollBehavior = 'smooth';
+    } else if (track.scrollLeft <= curSetWidth * 0.15) {
+      track.style.scrollBehavior = 'auto';
+      track.scrollLeft += curSetWidth;
+      track.style.scrollBehavior = 'smooth';
+    }
+  };
+
+  track.addEventListener('scroll', () => {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(handleInfiniteJump, 120);
+  }, { passive: true });
+
+  if (nextBtn) {
+    nextBtn.onclick = (e) => {
+      e.stopPropagation();
+      const { cardStep: step } = calculateMetrics();
+      track.scrollBy({ left: step, behavior: 'smooth' });
+      restartNovAutoScroll(numOriginalItems);
+    };
+  }
+
+  if (prevBtn) {
+    prevBtn.onclick = (e) => {
+      e.stopPropagation();
+      const { cardStep: step } = calculateMetrics();
+      track.scrollBy({ left: -step, behavior: 'smooth' });
+      restartNovAutoScroll(numOriginalItems);
+    };
+  }
+
+  track.onmouseenter = stopNovAutoScroll;
+  track.onmouseleave = () => startNovAutoScroll(numOriginalItems);
+  track.ontouchstart = stopNovAutoScroll;
+  track.ontouchend = () => {
+    setTimeout(() => startNovAutoScroll(numOriginalItems), 2500);
+  };
+
+  startNovAutoScroll(numOriginalItems);
+}
+
+function startNovAutoScroll(numOriginalItems) {
+  stopNovAutoScroll();
+  const track = document.getElementById('novTrack');
+  if (!track || numOriginalItems <= 1) return;
+  novCarouselTimer = setInterval(() => {
+    const cards = track.querySelectorAll('.card');
+    if (cards.length < 2) return;
+    const step = cards[1].offsetLeft - cards[0].offsetLeft;
+    track.scrollBy({ left: step, behavior: 'smooth' });
+  }, 3500);
+}
+
+function stopNovAutoScroll() {
+  if (novCarouselTimer) {
+    clearInterval(novCarouselTimer);
+    novCarouselTimer = null;
+  }
+}
+
+function restartNovAutoScroll(numOriginalItems) {
+  stopNovAutoScroll();
+  startNovAutoScroll(numOriginalItems);
+}
+
+/* ---------- Modal de Detalle (Carga en 1000px) ---------- */
+const productModal = document.getElementById('productModal');
+
+function openProductModal(p) {
+  currentModalProduct = p;
+  
+  const cardEl = document.getElementById('modalContentCard');
+  if (!p.hasStock) {
+    cardEl.classList.add('out-of-stock');
+  } else {
+    cardEl.classList.remove('out-of-stock');
+  }
+  
+  const photoEl = document.getElementById('modalPhoto');
+  const modalImgSrc = driveDirectLink(p.fotoOriginal || p.foto, 1000);
+
+  if (p.foto || p.fotoOriginal) {
+    photoEl.className = 'modal-photo';
+    photoEl.innerHTML = `<img src="${modalImgSrc}" alt="${p.nombre}" decoding="async">`;
+  } else {
+    photoEl.className = 'modal-photo noimg';
+    photoEl.textContent = 'Sin foto';
+  }
+
+  document.getElementById('modalTitle').textContent = p.nombre;
+
+  const descEl = document.getElementById('modalDesc');
+  if (p.descripcion) {
+    descEl.textContent = p.descripcion;
+    descEl.style.display = 'block';
+  } else {
+    descEl.style.display = 'none';
+  }
+
+  let specsHtml = '';
+  if (p.categoria === 'macetas') {
+    const potTag = getPotTagHtml(p.subcategoria);
+    const sizeTag = p.tamano ? `<span class="pill pill-size">📏 Medida: ${p.tamano}</span>` : '';
+    specsHtml = `${potTag}${sizeTag}`;
+  } else if (p.categoria === 'tierras_adornos') {
+    const supplyTag = getSupplyTagHtml(p.subcategoria);
+    const sizeTag = p.tamano ? `<span class="pill pill-size">📦 Presentación: ${p.tamano}</span>` : '';
+    specsHtml = `${supplyTag}${sizeTag}`;
+  } else {
+    const plantTag = getPlantTagHtml(p.subcategoria);
+    const sizeTag = p.tamano ? `<span class="pill pill-size">🪴 Tamaño: ${p.tamano}</span>` : '';
+    const luzTag = getLuzTagHtml(p.luz, true);
+    const riegoTag = getRiegoTagHtml(p.riego, true);
+    const cuidadoTag = p.cuidado ? `<span class="pill">🌱 Cuidado: ${p.cuidado}</span>` : '';
+    specsHtml = `${plantTag}${sizeTag}${luzTag}${riegoTag}${cuidadoTag}`;
+  }
+
+  document.getElementById('modalSpecs').innerHTML = specsHtml;
+  
+  if (p.tipoDestacado === 'promo' && p.hasStock) {
+    document.getElementById('modalPrice').innerHTML = `<span style="color:#D93829; font-weight:800; font-size:21px;">${money(p.precio)}</span> <span class="promo-tag-pill" style="margin-left:6px; font-size:10.5px;">🔥 PRECIO PROMO</span>`;
+  } else {
+    document.getElementById('modalPrice').textContent = money(p.precio);
+  }
+
+  renderQtyControl(document.getElementById('modalQtyControl'), p);
+
+  productModal.classList.add('open');
+}
+
+function closeProductModal() {
+  productModal.classList.remove('open');
+  currentModalProduct = null;
+}
+
+document.getElementById('closeProductModal').addEventListener('click', closeProductModal);
+productModal.addEventListener('click', (e) => {
+  if (e.target === productModal) closeProductModal();
+});
+
+/* ---------- Carga Catálogo ---------- */
+function fetchCsv(url) {
+  return new Promise((resolve) => {
+    if (!url) return resolve([]);
+    Papa.parse(url, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => resolve(results.data || []),
+      error: () => resolve([])
+    });
+  });
+}
+
+async function loadFromSheet() {
+  renderStatus('Cargando catálogo…');
+  
+  const minDelay = new Promise(resolve => setTimeout(resolve, 1400));
+
+  try {
+    const [plantRows, potRows, supplyRows] = await Promise.all([
+      fetchCsv(CONFIG.SHEET_CSV_URL),
+      fetchCsv(CONFIG.POTS_CSV_URL),
+      fetchCsv(CONFIG.SUPPLIES_CSV_URL),
+      minDelay
+    ]);
+
+    const plants = plantRows.map(normalizePlantRow).filter(p => p.nombre);
+    const pots = potRows.map(normalizePotRow).filter(p => p.nombre);
+    const supplies = supplyRows.map(normalizeSupplyRow).filter(p => p.nombre);
+
+    PRODUCTS = [...plants, ...pots, ...supplies];
+
+    if (!PRODUCTS.length) {
+      renderStatus('No se encontraron productos en las hojas de cálculo. Verificá que los datos estén publicados como CSV.');
+      hideLoader();
+      return;
+    }
+
+    renderStatus('');
+    renderCatalog();
+    loadBannersFromSheet();
+  } catch (err) {
+    renderStatus('No se pudo conectar con las bases de datos de Google Sheets.');
+  } finally {
+    hideLoader();
+  }
+}
+
+function renderCatalog() {
+  stopNovAutoScroll();
+
+  const container = document.getElementById('catalogContainer');
+  container.innerHTML = '';
+
+  const q = searchQuery.toLowerCase().trim();
+
+  let filtered = PRODUCTS.filter(p => {
+    if (!q) return true;
+    return p.nombre.toLowerCase().includes(q) ||
+           p.descripcion.toLowerCase().includes(q) ||
+           (p.subcategoria && p.subcategoria.toLowerCase().includes(q)) ||
+           p.luz.toLowerCase().includes(q);
+  });
+
+  let totalVisibleMatches = 0;
+
+  // 1. SECCIÓN DE NOVEDADES Y PROMOS (CARRUSEL INFINITO)
+  const novedadProducts = filtered.filter(p => p.tipoDestacado !== null);
+  const shouldRenderNovedades = (activeCategoryFilter === 'all' || activeCategoryFilter === 'novedades') && novedadProducts.length > 0;
+
+  if (shouldRenderNovedades) {
+    const inStockNov = novedadProducts.filter(p => p.hasStock);
+    const outOfStockNov = novedadProducts.filter(p => !p.hasStock);
+    const orderedNov = [...inStockNov, ...outOfStockNov];
+
+    totalVisibleMatches += orderedNov.length;
+
+    const novSection = document.createElement('section');
+    novSection.className = 'category-section novedades-section';
+    novSection.id = 'cat-novedades';
+
+    novSection.innerHTML = `
+      <div class="category-header">
+        <div class="category-title-wrap">
+          <h2 class="category-title">✨ Novedades y Promos <span class="badge">${orderedNov.length}</span></h2>
+          <p class="category-desc">Descubrí nuestros nuevos ingresos de plantas, macetas y promociones especiales.</p>
+        </div>
+      </div>
+      <div class="nov-carousel-wrap">
+        <button class="nov-carousel-btn prev" id="novPrev" aria-label="Producto anterior">‹</button>
+        <div class="nov-carousel-track" id="novTrack"></div>
+        <button class="nov-carousel-btn next" id="novNext" aria-label="Producto siguiente">›</button>
+      </div>
+    `;
+
+    container.appendChild(novSection);
+
+    const novTrack = novSection.querySelector('#novTrack');
+    const repeatTimes = orderedNov.length > 1 ? 3 : 1;
+    for (let r = 0; r < repeatTimes; r++) {
+      orderedNov.forEach(product => {
+        novTrack.appendChild(createProductCard(product));
+      });
+    }
+
+    initNovedadesCarousel(orderedNov.length);
+  }
+
+  if (activeCategoryFilter === 'novedades') {
+    if (novedadProducts.length === 0) {
+      container.innerHTML = `<div class="status">No hay productos marcados como novedad o promoción actualmente.</div>`;
+    }
+    return;
+  }
+
+  // 2. SECCIONES REGULARES DE CATEGORÍAS
+  const categoriesToRender = activeCategoryFilter === 'all' 
+    ? CATEGORIES_DEF 
+    : CATEGORIES_DEF.filter(c => c.id === activeCategoryFilter);
+
+  categoriesToRender.forEach(cat => {
+    let catProducts = filtered.filter(p => p.categoria === cat.id);
+    if (!catProducts.length) return;
+    
+    if (cat.id === 'macetas' && activePotSubcategory !== 'all') {
+      catProducts = catProducts.filter(p => p.subcategoria && p.subcategoria.toLowerCase() === activePotSubcategory.toLowerCase());
+    } else if (cat.id === 'tierras_adornos' && activeSupplySubcategory !== 'all') {
+      catProducts = catProducts.filter(p => p.subcategoria && p.subcategoria.toLowerCase() === activeSupplySubcategory.toLowerCase());
+    } else if (['exterior', 'interior_exterior', 'interior'].includes(cat.id) && activePlantSubcategories[cat.id] !== 'all') {
+      catProducts = catProducts.filter(p => p.subcategoria && p.subcategoria.toLowerCase() === activePlantSubcategories[cat.id].toLowerCase());
+    }
+
+    const inStock = catProducts.filter(p => p.hasStock);
+    const outOfStock = catProducts.filter(p => !p.hasStock);
+    catProducts = [...inStock, ...outOfStock];
+
+    totalVisibleMatches += catProducts.length;
+
+    const isPlantSubfiltered = ['exterior', 'interior_exterior', 'interior'].includes(cat.id) && activePlantSubcategories[cat.id] !== 'all';
+    const isPotSubfiltered = cat.id === 'macetas' && activePotSubcategory !== 'all';
+    const isSupplySubfiltered = cat.id === 'tierras_adornos' && activeSupplySubcategory !== 'all';
+    const hasSubfilterActive = isPlantSubfiltered || isPotSubfiltered || isSupplySubfiltered;
+
+    const isExpanded = expandedCategories[cat.id] || 
+                       (q.length > 0) || 
+                       hasSubfilterActive;
+
+    const visibleProducts = isExpanded 
+      ? catProducts 
+      : catProducts.slice(0, CONFIG.INITIAL_ITEMS_PER_CATEGORY);
+
+    const section = document.createElement('section');
+    section.className = 'category-section';
+    section.id = `cat-${cat.id}`;
+
+    let subcats = [];
+    let activeSub = 'all';
+
+    if (cat.id === 'macetas') {
+      subcats = getPotSubcategories();
+      activeSub = activePotSubcategory;
+    } else if (cat.id === 'tierras_adornos') {
+      subcats = getSupplySubcategories();
+      activeSub = activeSupplySubcategory;
+    } else if (['exterior', 'interior_exterior', 'interior'].includes(cat.id)) {
+      subcats = getPlantSubcategories(cat.id);
+      activeSub = activePlantSubcategories[cat.id] || 'all';
+    }
+
+    section.innerHTML = `
+      <div class="category-header">
+        <div class="category-title-wrap">
+          <h2 class="category-title">${cat.icon} ${cat.name} <span class="badge">${catProducts.length} artículo${catProducts.length === 1 ? '' : 's'}</span></h2>
+          <p class="category-desc">${cat.desc}</p>
+        </div>
+        ${subcats.length ? `
+          <div class="subcat-nav">
+            <button class="subcat-pill ${activeSub === 'all' ? 'active' : ''}" data-subcat="all">Todas</button>
+            ${subcats.map(sub => `
+              <button class="subcat-pill ${activeSub.toLowerCase() === sub.toLowerCase() ? 'active' : ''}" data-subcat="${sub}">${sub}</button>
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
+      <div class="grid" id="grid-${cat.id}"></div>
+      ${(!isExpanded && catProducts.length > CONFIG.INITIAL_ITEMS_PER_CATEGORY) ? `
+        <div class="section-footer">
+          <button class="btn-toggle-more" data-cat="${cat.id}">
+            Ver más de ${cat.name} (+${catProducts.length - CONFIG.INITIAL_ITEMS_PER_CATEGORY}) ↓
+          </button>
+        </div>
+      ` : (isExpanded && catProducts.length > CONFIG.INITIAL_ITEMS_PER_CATEGORY && !q && !hasSubfilterActive) ? `
+        <div class="section-footer">
+          <button class="btn-toggle-more" data-cat="${cat.id}">
+            Ver menos ↑
+          </button>
+        </div>
+      ` : ''}
+    `;
+
+    container.appendChild(section);
+
+    if (subcats.length) {
+      section.querySelectorAll('.subcat-pill').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const chosen = btn.dataset.subcat;
+          if (cat.id === 'macetas') {
+            activePotSubcategory = chosen;
+          } else if (cat.id === 'tierras_adornos') {
+            activeSupplySubcategory = chosen;
+          } else if (['exterior', 'interior_exterior', 'interior'].includes(cat.id)) {
+            activePlantSubcategories[cat.id] = chosen;
+          }
+          renderCatalog();
+        });
+      });
+    }
+
+    const grid = section.querySelector(`#grid-${cat.id}`);
+    visibleProducts.forEach(product => {
+      grid.appendChild(createProductCard(product));
+    });
+
+    const toggleBtn = section.querySelector('.btn-toggle-more');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        expandedCategories[cat.id] = !expandedCategories[cat.id];
+        renderCatalog();
+      });
+    }
+  });
+
+  if (totalVisibleMatches === 0) {
+    container.innerHTML = `<div class="status">No encontramos productos que coincidan con la búsqueda o filtro seleccionado.</div>`;
+  }
+}
+
+function createProductCard(p) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  if (!p.hasStock) card.classList.add('out-of-stock');
+  if (p.tipoDestacado === 'promo' && p.hasStock) card.classList.add('is-promo');
+
+  let badgeHtml = '';
+  if (!p.hasStock) {
+    badgeHtml = `<div class="out-of-stock-badge">Sin stock</div>`;
+  } else if (p.tipoDestacado === 'promo') {
+    badgeHtml = `<div class="promo-badge">🔥 Promo</div>`;
+  } else if (p.tipoDestacado === 'novedad') {
+    badgeHtml = `<div class="novedad-badge">✨ Novedad</div>`;
+  }
+
+  const photoHtml = p.foto
+    ? `<div class="photo-wrap">${badgeHtml}<img src="${p.foto}" alt="${p.nombre}" loading="lazy" decoding="async" onerror="this.parentElement.classList.add('noimg'); this.remove(); this.parentElement.textContent='Sin foto';"></div>`
+    : `<div class="photo-wrap noimg">${badgeHtml}Sin foto</div>`;
+
+  let specsHtml = '';
+  if (p.categoria === 'macetas') {
+    const potTag = getPotTagHtml(p.subcategoria);
+    const sizeTag = p.tamano ? `<span class="pill pill-size">📏 ${p.tamano}</span>` : '';
+    specsHtml = `<div class="specs">${potTag}${sizeTag}</div>`;
+  } else if (p.categoria === 'tierras_adornos') {
+    const supplyTag = getSupplyTagHtml(p.subcategoria);
+    const sizeTag = p.tamano ? `<span class="pill pill-size">📦 ${p.tamano}</span>` : '';
+    specsHtml = `<div class="specs">${supplyTag}${sizeTag}</div>`;
+  } else {
+    const plantTag = getPlantTagHtml(p.subcategoria);
+    const sizeTag = p.tamano ? `<span class="pill pill-size">🪴 ${p.tamano}</span>` : '';
+    const luzTag = getLuzTagHtml(p.luz);
+    const riegoTag = getRiegoTagHtml(p.riego);
+    specsHtml = `<div class="specs">${plantTag}${sizeTag}${luzTag}${riegoTag}</div>`;
+  }
+
+  const promoTagHtml = (p.tipoDestacado === 'promo' && p.hasStock)
+    ? `<span class="promo-tag-pill">🔥 OFERTA</span>` 
+    : '';
+
+  card.innerHTML = `
+    ${photoHtml}
+    <div class="body">
+      <h3>${p.nombre}</h3>
+      ${specsHtml}
+      <div class="price-row">
+        <div class="price-box">
+          <span class="price">${money(p.precio)}</span>
+          ${promoTagHtml}
+        </div>
+        <div class="qty-control" data-name="${encodeURIComponent(p.nombre)}"></div>
+      </div>
+    </div>
+  `;
+
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('.qty-control') || e.target.closest('button')) return;
+    openProductModal(p);
+  });
+
+  renderQtyControl(card.querySelector('.qty-control'), p);
+  return card;
+}
+
+function renderQtyControl(el, product) {
+  if (!el) return;
+  const inCart = CART[product.nombre];
+  
+  if (!inCart) {
+    el.innerHTML = `<button class="add-btn">Agregar</button>`;
+    el.querySelector('.add-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      addToCart(product);
+      refreshControlsFor(product.nombre);
+    });
+  } else {
+    el.innerHTML = `
+      <div class="qty-stepper">
+        <button aria-label="Quitar uno">−</button>
+        <span>${inCart.qty}</span>
+        <button aria-label="Agregar uno">+</button>
+      </div>`;
+    const [minus, plus] = el.querySelectorAll('button');
+    minus.addEventListener('click', (e) => {
+      e.stopPropagation();
+      changeQty(product.nombre, -1);
+      refreshControlsFor(product.nombre);
+    });
+    plus.addEventListener('click', (e) => {
+      e.stopPropagation();
+      changeQty(product.nombre, 1);
+      refreshControlsFor(product.nombre);
+    });
+  }
+}
+
+function refreshControlsFor(nombre) {
+  const p = PRODUCTS.find(prod => prod.nombre === nombre);
+  if (!p) return;
+
+  document.querySelectorAll(`.qty-control[data-name="${encodeURIComponent(nombre)}"]`).forEach(el => {
+    renderQtyControl(el, p);
+  });
+
+  if (currentModalProduct && currentModalProduct.nombre === nombre) {
+    renderQtyControl(document.getElementById('modalQtyControl'), p);
+  }
+}
+
+function triggerCartAnimation() {
+  const cartBtn = document.getElementById('openCart');
+  cartBtn.classList.remove('bump');
+  void cartBtn.offsetWidth;
+  cartBtn.classList.add('bump');
+}
+
+function addToCart(product) {
+  CART[product.nombre] = { ...product, qty: 1 };
+  triggerCartAnimation();
+  updateCartUI();
+}
+
+function changeQty(nombre, delta) {
+  if (!CART[nombre]) return;
+  CART[nombre].qty += delta;
+  if (CART[nombre].qty <= 0) {
+    delete CART[nombre];
+  } else if (delta > 0) {
+    triggerCartAnimation();
+  }
+  updateCartUI();
+}
+
+function removeFromCart(nombre) {
+  delete CART[nombre];
+  updateCartUI();
+  refreshControlsFor(nombre);
+}
+
+function cartArray() { return Object.values(CART); }
+function cartCount() { return cartArray().reduce((s,i) => s + i.qty, 0); }
+function cartTotal() { return cartArray().reduce((s,i) => s + (i.precio === null ? 0 : i.qty * i.precio), 0); }
+function cartHasConsulta() { return cartArray().some(i => i.precio === null); }
+
+function updateCartUI() {
+  const totalCount = cartCount();
+  const cartBtn = document.getElementById('openCart');
+
+  document.getElementById('cartCount').textContent = totalCount;
+  if (totalCount > 0) {
+    cartBtn.classList.add('has-items');
+  } else {
+    cartBtn.classList.remove('has-items');
+  }
+
+  document.getElementById('drawerSub').textContent = `${totalCount} artículo${totalCount === 1 ? '' : 's'}`;
+  document.getElementById('totalAmount').textContent = money(cartTotal());
+  document.getElementById('totalNote').style.display = cartHasConsulta() ? 'block' : 'none';
+
+  const itemsEl = document.getElementById('drawerItems');
+  const items = cartArray();
+  if (!items.length) {
+    itemsEl.innerHTML = `<div class="drawer-empty">Tu carrito está vacío.<br>Agregá plantas, macetas o insumos para armar tu pedido.</div>`;
+    document.getElementById('sendWa').disabled = true;
+    return;
+  }
+  document.getElementById('sendWa').disabled = false;
+  itemsEl.innerHTML = items.map(i => `
+    <div class="line-item">
+      ${i.foto ? `<img src="${i.foto}" alt="${i.nombre}" loading="lazy" decoding="async">` : `<div style="width:56px;height:56px;border-radius:8px;background:var(--paper-alt);flex-shrink:0;"></div>`}
+      <div class="info">
+        <div class="name">${i.nombre}</div>
+        <div class="unit">${i.precio === null ? 'Precio a consultar' : money(i.precio) + ' c/u'}</div>
+        <div class="row-bottom">
+          <span class="unit">${i.precio === null ? `${i.qty} unidad${i.qty === 1 ? '' : 'es'}` : `${i.qty} × ${money(i.precio)} = <strong>${money(i.qty * i.precio)}</strong>`}</span>
+          <button class="remove-link" data-name="${encodeURIComponent(i.nombre)}">Quitar</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  itemsEl.querySelectorAll('.remove-link').forEach(btn => {
+    btn.addEventListener('click', () => removeFromCart(decodeURIComponent(btn.dataset.name)));
+  });
+}
+
+function buildWhatsAppMessage() {
+  const items = cartArray();
+  let msg = `Hola ${CONFIG.SHOP_NAME}! Quiero hacer este pedido:\n\n`;
+  items.forEach(i => {
+    msg += i.precio === null
+      ? `• ${i.nombre} x${i.qty} — a consultar\n`
+      : `• ${i.nombre} x${i.qty} — ${money(i.qty * i.precio)}\n`;
+  });
+  msg += `\nTotal: ${money(cartTotal())}`;
+  if (cartHasConsulta()) msg += ` (+ artículos a consultar)`;
+  return encodeURIComponent(msg);
+}
+
+document.getElementById('sendWa').addEventListener('click', () => {
+  if (!cartArray().length) return;
+  const url = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${buildWhatsAppMessage()}`;
+  window.open(url, '_blank');
+});
+
+const overlay = document.getElementById('overlay');
+const drawer = document.getElementById('drawer');
+function openDrawer() { overlay.classList.add('open'); drawer.classList.add('open'); }
+function closeDrawer() { overlay.classList.remove('open'); drawer.classList.remove('open'); }
+
+document.getElementById('openCart').addEventListener('click', openDrawer);
+document.getElementById('closeCart').addEventListener('click', closeDrawer);
+overlay.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', (e) => { 
+  if (e.key === 'Escape') {
+    closeDrawer();
+    closeProductModal();
+  }
+});
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  searchQuery = e.target.value;
+  renderCatalog();
+});
+
+document.querySelectorAll('.cat-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCategoryFilter = btn.dataset.cat;
+    renderCatalog();
+  });
+});
+
+loadFromSheet();
+updateCartUI();
+</script>
+
+</body>
+</html>
