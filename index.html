@@ -537,37 +537,24 @@
     background: rgba(216, 162, 94, 0.12);
   }
 
-  /* ---------- Contenedor Principal ---------- */
-  main {
+  /* ============================================================
+     SECCIÓN FIJA DE NOVEDADES (INDEPENDIENTE DEL CATÁLOGO)
+     ============================================================ */
+  .novedades-wrapper {
+    max-width: 1180px;
+    margin: 0 auto 36px;
+    padding: 0 24px;
     position: relative;
     z-index: 1;
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 10px 24px 24px;
   }
 
-  .status {
-    text-align: center;
-    padding: 60px 20px;
-    color: rgba(244, 239, 230, 0.7);
-    font-family: 'Space Mono', monospace;
-    font-size: 13.5px;
-    line-height: 1.6;
-  }
-
-  /* ---------- Secciones de Categorías ---------- */
-  .category-section { margin-bottom: 56px; }
-
-  /* ============================================================
-     SECCIÓN Y CARRUSEL DE NOVEDADES Y PROMOS
-     ============================================================ */
   .category-section.novedades-section {
     background: rgba(216, 162, 94, 0.05);
     border: 1px dashed rgba(216, 162, 94, 0.35);
     border-radius: var(--radius);
     padding: 24px 22px 28px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-    margin-bottom: 50px;
+    margin: 0;
   }
   .category-section.novedades-section .category-title {
     color: var(--gold);
@@ -627,6 +614,27 @@
   }
   .nov-carousel-btn.prev { left: -16px; }
   .nov-carousel-btn.next { right: -16px; }
+
+  /* ---------- Contenedor Principal ---------- */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 10px 24px 24px;
+  }
+
+  .status {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(244, 239, 230, 0.7);
+    font-family: 'Space Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+
+  /* ---------- Secciones de Categorías ---------- */
+  .category-section { margin-bottom: 56px; }
 
   .category-header {
     display: flex;
@@ -772,9 +780,6 @@
     box-shadow: 0 2px 10px rgba(226, 88, 72, 0.4);
   }
 
-  /* ============================================================
-     ESTILOS LLAMATIVOS PARA PRODUCTOS EN PROMO
-     ============================================================ */
   .card.is-promo {
     border: 2px solid rgba(226, 88, 72, 0.55);
     box-shadow: 0 6px 20px rgba(226, 88, 72, 0.22);
@@ -870,9 +875,6 @@
     align-content: flex-start;
   }
 
-  /* ============================================================
-     SISTEMA DE TAGS Y ESCALAS CROMÁTICAS
-     ============================================================ */
   .pill {
     font-family: 'Space Mono', monospace;
     font-size: 10.5px;
@@ -1540,11 +1542,10 @@
     .carousel-btn { width: 34px; font-size: 26px; }
     .carousel-dots { bottom: 8px; right: 14px; }
 
-    .category-section { margin-bottom: 40px; }
-    
+    .novedades-wrapper { padding: 0 14px; margin-bottom: 24px; }
     .category-section.novedades-section {
       padding: 16px 0 20px;
-      margin-bottom: 30px;
+      margin-bottom: 0;
     }
     .category-section.novedades-section .category-header {
       padding: 0 14px 10px;
@@ -1580,6 +1581,7 @@
       padding: 1.5px 5px;
     }
 
+    .category-section { margin-bottom: 40px; }
     .category-header { margin-bottom: 14px; padding-bottom: 10px; gap: 8px; }
     .category-title { font-size: 20px; }
     .category-desc { font-size: 12px; }
@@ -1705,7 +1707,7 @@
   </a>
 </div>
 
-<div class="controls-wrap">
+<div class="controls-wrap" id="controlsWrap">
   <div class="search-row">
     <input type="text" id="searchInput" placeholder="Buscar por planta, maceta, tierra o abono…" aria-label="Buscar un producto">
   </div>
@@ -1719,6 +1721,9 @@
     <button class="cat-pill" data-cat="tierras_adornos">🌱 Tierras y Adornos</button>
   </div>
 </div>
+
+<!-- Contenedor dedicado y aislado para Novedades y Promos -->
+<div class="novedades-wrapper" id="novedadesContainer" style="display:none;"></div>
 
 <main>
   <div id="status" class="status">Cargando catálogo…</div>
@@ -1827,6 +1832,7 @@ let expandedCategories = { exterior: false, interior_exterior: false, interior: 
 let currentSlide = 0;
 let carouselTimer = null;
 let novCarouselTimer = null;
+let novedadesRendered = false; // Bandera para no re-renderizar nunca el carrusel innecesariamente
 
 function hideLoader() {
   const loader = document.getElementById('loaderScreen');
@@ -1844,7 +1850,6 @@ function money(n) {
   return '$' + num.toLocaleString('es-AR');
 }
 
-/* Optimizado: permite solicitar tamaño de miniatura (400px por defecto) */
 function driveDirectLink(url, size = 400) {
   if (!url) return '';
   url = url.trim();
@@ -2193,7 +2198,7 @@ function renderStatus(msg) {
 }
 
 /* ============================================================
-   CARRUSEL DINÁMICO DE BANNERS (ALTA RESOLUCIÓN Y PRIORIDAD)
+   CARRUSEL DINÁMICO DE BANNERS
    ============================================================ */
 function loadBannersFromSheet() {
   if (!CONFIG.BANNERS_CSV_URL) {
@@ -2327,8 +2332,51 @@ function restartCarouselAuto() {
 }
 
 /* ============================================================
-   CARRUSEL INFINITO DE NOVEDADES Y PROMOS
+   SECCIÓN DE NOVEDADES Y PROMOS: SE RENDERIZA UNA SOLA VEZ
    ============================================================ */
+function setupNovedadesSectionOnce() {
+  const novContainer = document.getElementById('novedadesContainer');
+  if (!novContainer || novedadesRendered) return;
+
+  const novedadProducts = PRODUCTS.filter(p => p.tipoDestacado !== null);
+  if (!novedadProducts.length) {
+    novContainer.style.display = 'none';
+    return;
+  }
+
+  const inStockNov = novedadProducts.filter(p => p.hasStock);
+  const outOfStockNov = novedadProducts.filter(p => !p.hasStock);
+  const orderedNov = [...inStockNov, ...outOfStockNov];
+
+  novContainer.innerHTML = `
+    <section class="category-section novedades-section" id="cat-novedades">
+      <div class="category-header">
+        <div class="category-title-wrap">
+          <h2 class="category-title">✨ Novedades y Promos <span class="badge">${orderedNov.length}</span></h2>
+          <p class="category-desc">Descubrí nuestros nuevos ingresos de plantas, macetas y promociones especiales.</p>
+        </div>
+      </div>
+      <div class="nov-carousel-wrap">
+        <button class="nov-carousel-btn prev" id="novPrev" aria-label="Producto anterior">‹</button>
+        <div class="nov-carousel-track" id="novTrack"></div>
+        <button class="nov-carousel-btn next" id="novNext" aria-label="Producto siguiente">›</button>
+      </div>
+    </section>
+  `;
+
+  const novTrack = novContainer.querySelector('#novTrack');
+  const repeatTimes = orderedNov.length > 1 ? 3 : 1;
+  for (let r = 0; r < repeatTimes; r++) {
+    orderedNov.forEach(product => {
+      novTrack.appendChild(createProductCard(product));
+    });
+  }
+
+  initNovedadesCarousel(orderedNov.length);
+  novContainer.style.display = 'block';
+  novedadesRendered = true;
+}
+
 function initNovedadesCarousel(numOriginalItems) {
   const track = document.getElementById('novTrack');
   const prevBtn = document.getElementById('novPrev');
@@ -2537,6 +2585,7 @@ async function loadFromSheet() {
     }
 
     renderStatus('');
+    setupNovedadesSectionOnce(); // Se crea el carrusel de novedades una única vez
     renderCatalog();
     loadBannersFromSheet();
   } catch (err) {
@@ -2546,10 +2595,47 @@ async function loadFromSheet() {
   }
 }
 
-function renderCatalog() {
-  stopNovAutoScroll();
-
+/* ============================================================
+   RENDERIZADO DE CATEGORÍAS (SIN TOCAR EL CARRUSEL DE NOVEDADES)
+   ============================================================ */
+function renderCatalog(anchorId = null) {
   const container = document.getElementById('catalogContainer');
+  if (!container) return;
+
+  const novContainer = document.getElementById('novedadesContainer');
+
+  // Visibilidad del carrusel de novedades según el filtro activo
+  if (novContainer) {
+    if (activeCategoryFilter === 'all' || activeCategoryFilter === 'novedades') {
+      novContainer.style.display = 'block';
+    } else {
+      novContainer.style.display = 'none';
+    }
+  }
+
+  // Si eligió específicamente la pestaña "Novedades y Promos"
+  if (activeCategoryFilter === 'novedades') {
+    container.innerHTML = '';
+    return;
+  }
+
+  let anchorTop = null;
+  let targetElement = null;
+
+  if (anchorId) {
+    targetElement = document.getElementById(anchorId);
+    if (targetElement) {
+      anchorTop = targetElement.getBoundingClientRect().top;
+    }
+  } else {
+    anchorTop = window.scrollY;
+  }
+
+  const prevHeight = container.offsetHeight;
+  if (prevHeight > 0) {
+    container.style.minHeight = prevHeight + 'px';
+  }
+
   container.innerHTML = '';
 
   const q = searchQuery.toLowerCase().trim();
@@ -2564,56 +2650,6 @@ function renderCatalog() {
 
   let totalVisibleMatches = 0;
 
-  // 1. SECCIÓN DE NOVEDADES Y PROMOS (CARRUSEL INFINITO)
-  const novedadProducts = filtered.filter(p => p.tipoDestacado !== null);
-  const shouldRenderNovedades = (activeCategoryFilter === 'all' || activeCategoryFilter === 'novedades') && novedadProducts.length > 0;
-
-  if (shouldRenderNovedades) {
-    const inStockNov = novedadProducts.filter(p => p.hasStock);
-    const outOfStockNov = novedadProducts.filter(p => !p.hasStock);
-    const orderedNov = [...inStockNov, ...outOfStockNov];
-
-    totalVisibleMatches += orderedNov.length;
-
-    const novSection = document.createElement('section');
-    novSection.className = 'category-section novedades-section';
-    novSection.id = 'cat-novedades';
-
-    novSection.innerHTML = `
-      <div class="category-header">
-        <div class="category-title-wrap">
-          <h2 class="category-title">✨ Novedades y Promos <span class="badge">${orderedNov.length}</span></h2>
-          <p class="category-desc">Descubrí nuestros nuevos ingresos de plantas, macetas y promociones especiales.</p>
-        </div>
-      </div>
-      <div class="nov-carousel-wrap">
-        <button class="nov-carousel-btn prev" id="novPrev" aria-label="Producto anterior">‹</button>
-        <div class="nov-carousel-track" id="novTrack"></div>
-        <button class="nov-carousel-btn next" id="novNext" aria-label="Producto siguiente">›</button>
-      </div>
-    `;
-
-    container.appendChild(novSection);
-
-    const novTrack = novSection.querySelector('#novTrack');
-    const repeatTimes = orderedNov.length > 1 ? 3 : 1;
-    for (let r = 0; r < repeatTimes; r++) {
-      orderedNov.forEach(product => {
-        novTrack.appendChild(createProductCard(product));
-      });
-    }
-
-    initNovedadesCarousel(orderedNov.length);
-  }
-
-  if (activeCategoryFilter === 'novedades') {
-    if (novedadProducts.length === 0) {
-      container.innerHTML = `<div class="status">No hay productos marcados como novedad o promoción actualmente.</div>`;
-    }
-    return;
-  }
-
-  // 2. SECCIONES REGULARES DE CATEGORÍAS
   const categoriesToRender = activeCategoryFilter === 'all' 
     ? CATEGORIES_DEF 
     : CATEGORIES_DEF.filter(c => c.id === activeCategoryFilter);
@@ -2675,9 +2711,9 @@ function renderCatalog() {
         </div>
         ${subcats.length ? `
           <div class="subcat-nav">
-            <button class="subcat-pill ${activeSub === 'all' ? 'active' : ''}" data-subcat="all">Todas</button>
+            <button type="button" class="subcat-pill ${activeSub === 'all' ? 'active' : ''}" data-subcat="all">Todas</button>
             ${subcats.map(sub => `
-              <button class="subcat-pill ${activeSub.toLowerCase() === sub.toLowerCase() ? 'active' : ''}" data-subcat="${sub}">${sub}</button>
+              <button type="button" class="subcat-pill ${activeSub.toLowerCase() === sub.toLowerCase() ? 'active' : ''}" data-subcat="${sub}">${sub}</button>
             `).join('')}
           </div>
         ` : ''}
@@ -2685,13 +2721,13 @@ function renderCatalog() {
       <div class="grid" id="grid-${cat.id}"></div>
       ${(!isExpanded && catProducts.length > CONFIG.INITIAL_ITEMS_PER_CATEGORY) ? `
         <div class="section-footer">
-          <button class="btn-toggle-more" data-cat="${cat.id}">
+          <button type="button" class="btn-toggle-more" data-cat="${cat.id}">
             Ver más de ${cat.name} (+${catProducts.length - CONFIG.INITIAL_ITEMS_PER_CATEGORY}) ↓
           </button>
         </div>
       ` : (isExpanded && catProducts.length > CONFIG.INITIAL_ITEMS_PER_CATEGORY && !q && !hasSubfilterActive) ? `
         <div class="section-footer">
-          <button class="btn-toggle-more" data-cat="${cat.id}">
+          <button type="button" class="btn-toggle-more" data-cat="${cat.id}">
             Ver menos ↑
           </button>
         </div>
@@ -2703,6 +2739,7 @@ function renderCatalog() {
     if (subcats.length) {
       section.querySelectorAll('.subcat-pill').forEach(btn => {
         btn.addEventListener('click', (e) => {
+          e.preventDefault();
           e.stopPropagation();
           const chosen = btn.dataset.subcat;
           if (cat.id === 'macetas') {
@@ -2712,7 +2749,7 @@ function renderCatalog() {
           } else if (['exterior', 'interior_exterior', 'interior'].includes(cat.id)) {
             activePlantSubcategories[cat.id] = chosen;
           }
-          renderCatalog();
+          renderCatalog(`cat-${cat.id}`);
         });
       });
     }
@@ -2724,15 +2761,43 @@ function renderCatalog() {
 
     const toggleBtn = section.querySelector('.btn-toggle-more');
     if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => {
+      toggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
         expandedCategories[cat.id] = !expandedCategories[cat.id];
-        renderCatalog();
+        renderCatalog(`cat-${cat.id}`);
       });
     }
   });
 
   if (totalVisibleMatches === 0) {
     container.innerHTML = `<div class="status">No encontramos productos que coincidan con la búsqueda o filtro seleccionado.</div>`;
+  }
+
+  finishRender(container, anchorId, targetElement, anchorTop);
+}
+
+function finishRender(container, anchorId, targetElement, anchorTop) {
+  container.style.minHeight = '';
+
+  if (anchorId && targetElement) {
+    const newTarget = document.getElementById(anchorId);
+    if (newTarget && anchorTop !== null) {
+      const currentTargetTop = newTarget.getBoundingClientRect().top;
+      const delta = currentTargetTop - anchorTop;
+      if (Math.abs(delta) > 1) {
+        try {
+          window.scrollBy({ top: delta, behavior: 'instant' });
+        } catch (err) {
+          window.scrollBy(0, delta);
+        }
+      }
+    }
+  } else if (typeof anchorTop === 'number') {
+    try {
+      window.scrollTo({ top: anchorTop, behavior: 'instant' });
+    } catch (err) {
+      window.scrollTo(0, anchorTop);
+    }
   }
 }
 
@@ -2805,7 +2870,7 @@ function renderQtyControl(el, product) {
   const inCart = CART[product.nombre];
   
   if (!inCart) {
-    el.innerHTML = `<button class="add-btn">Agregar</button>`;
+    el.innerHTML = `<button type="button" class="add-btn">Agregar</button>`;
     el.querySelector('.add-btn').addEventListener('click', (e) => {
       e.stopPropagation();
       addToCart(product);
@@ -2814,9 +2879,9 @@ function renderQtyControl(el, product) {
   } else {
     el.innerHTML = `
       <div class="qty-stepper">
-        <button aria-label="Quitar uno">−</button>
+        <button type="button" aria-label="Quitar uno">−</button>
         <span>${inCart.qty}</span>
-        <button aria-label="Agregar uno">+</button>
+        <button type="button" aria-label="Agregar uno">+</button>
       </div>`;
     const [minus, plus] = el.querySelectorAll('button');
     minus.addEventListener('click', (e) => {
@@ -2958,15 +3023,16 @@ document.addEventListener('keydown', (e) => {
 
 document.getElementById('searchInput').addEventListener('input', (e) => {
   searchQuery = e.target.value;
-  renderCatalog();
+  renderCatalog('controlsWrap');
 });
 
 document.querySelectorAll('.cat-pill').forEach(btn => {
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
     document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     activeCategoryFilter = btn.dataset.cat;
-    renderCatalog();
+    renderCatalog('categoryNav');
   });
 });
 
