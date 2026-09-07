@@ -346,62 +346,15 @@
     justify-content: center;
   }
 
-  /* ============================================================
-     EFECTO BLUR-UP & ENCUADRE DE FOTOS (CORREGIDO)
-     ============================================================ */
-  .card .photo-wrap,
-  .modal-photo,
-  .carousel-slide {
-    background: linear-gradient(110deg, #172d36 8%, #24414d 18%, #172d36 33%);
-    background-size: 200% 100%;
-    animation: shimmerPlaceholder 1.8s infinite linear;
-    overflow: hidden;
-    position: relative;
-  }
-
-  @keyframes shimmerPlaceholder {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-
-  /* Asegura que toda foto llene el marco cuadrado y quede perfectamente centrada */
-  .card .photo-wrap img,
-  .modal-photo img,
   .carousel-slide img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
-    filter: blur(14px);
-    opacity: 0.3;
-    transform: scale(1.08);
-    transition: filter 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
-                opacity 0.45s ease-out,
-                transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    will-change: filter, opacity, transform;
+    display: block;
+    transition: transform 0.3s ease;
   }
-
-  .card .photo-wrap img.loaded,
-  .modal-photo img.loaded,
-  .carousel-slide img.loaded {
-    filter: blur(0);
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  .card:hover .photo-wrap img.loaded {
-    transform: scale(1.05);
-  }
-
-  .carousel-slide:hover img.loaded {
-    transform: scale(1.01);
-  }
-
-  .card .photo-wrap.noimg,
-  .modal-photo.noimg {
-    animation: none;
-    background: var(--paper-alt);
-  }
+  .carousel-slide:hover img { transform: scale(1.01); }
 
   .carousel-btn {
     position: absolute;
@@ -735,7 +688,7 @@
   }
 
   /* ============================================================
-     SECCIÓN PREMIUM: CACTUS DE COLECCIÓN
+     SECCIÓN PREMIUM: CACTUS DE COLECCIÓN (AL FINAL)
      ============================================================ */
   .category-section.cactus-coleccion-section {
     position: relative;
@@ -969,12 +922,25 @@
     box-shadow: 0 10px 28px rgba(0,0,0,0.35), 0 0 24px rgba(226, 88, 72, 0.32);
   }
 
+  /* Marco 1:1 e imagen centrada con object-fit */
   .card .photo-wrap {
     aspect-ratio: 1/1;
     width: 100%;
+    background: var(--paper-alt);
     overflow: hidden;
     position: relative;
   }
+
+  .card .photo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .card:hover .photo-wrap img { transform: scale(1.05); }
 
   .card .photo-wrap.noimg {
     display: flex;
@@ -1207,6 +1173,13 @@
     position: relative;
     height: 100%;
     min-height: 280px;
+  }
+  .modal-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
   }
 
   .modal-content-wrap {
@@ -2316,7 +2289,7 @@ function initPromoCarousel(banners) {
       });
     }
 
-    slide.innerHTML = `<img src="${banner.foto}" alt="Banner promocional" fetchpriority="${i === 0 ? 'high' : 'auto'}" loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async" onload="this.classList.add('loaded')">`;
+    slide.innerHTML = `<img src="${banner.foto}" alt="Banner promocional" fetchpriority="${i === 0 ? 'high' : 'auto'}" loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async">`;
     track.appendChild(slide);
 
     const dot = document.createElement('button');
@@ -2543,7 +2516,7 @@ function openProductModal(p) {
 
   if (p.foto || p.fotoOriginal) {
     photoEl.className = 'modal-photo';
-    photoEl.innerHTML = `<img src="${modalImgSrc}" alt="${p.nombre}" decoding="async" onload="this.classList.add('loaded')">`;
+    photoEl.innerHTML = `<img src="${modalImgSrc}" alt="${p.nombre}" decoding="async">`;
   } else {
     photoEl.className = 'modal-photo noimg';
     photoEl.textContent = 'Sin foto';
@@ -2883,7 +2856,7 @@ function createProductCard(p) {
   }
 
   const photoHtml = p.foto
-    ? `<div class="photo-wrap">${badgeHtml}<img src="${p.foto}" alt="${p.nombre}" loading="lazy" decoding="async" onload="this.classList.add('loaded')" onerror="this.parentElement.classList.add('noimg'); this.remove(); this.parentElement.textContent='Sin foto';"></div>`
+    ? `<div class="photo-wrap">${badgeHtml}<img src="${p.foto}" alt="${p.nombre}" loading="lazy" decoding="async" onerror="this.parentElement.classList.add('noimg'); this.remove(); this.parentElement.textContent='Sin foto';"></div>`
     : `<div class="photo-wrap noimg">${badgeHtml}Sin foto</div>`;
 
   let specsHtml = '';
