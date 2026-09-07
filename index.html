@@ -71,7 +71,7 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.55s ease;
+    transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.45s ease;
   }
 
   .loader-screen.fade-out {
@@ -922,7 +922,6 @@
     box-shadow: 0 10px 28px rgba(0,0,0,0.35), 0 0 24px rgba(226, 88, 72, 0.32);
   }
 
-  /* Marco 1:1 e imagen centrada con object-fit */
   .card .photo-wrap {
     aspect-ratio: 1/1;
     width: 100%;
@@ -1818,15 +1817,19 @@ let carouselTimer = null;
 let novCarouselTimer = null;
 let novedadesRendered = false;
 
+/* Despedir loader de forma limpia e independiente */
 function hideLoader() {
   const loader = document.getElementById('loaderScreen');
-  if (!loader) return;
+  if (!loader || loader.classList.contains('fade-out')) return;
   loader.classList.add('fade-out');
   loader.setAttribute('aria-busy', 'false');
   setTimeout(() => {
-    loader.remove();
-  }, 600);
+    if (loader.parentNode) loader.remove();
+  }, 450);
 }
+
+// Duración fija: desaparece exactamente a 1 segundo sin esperar llamadas de red
+setTimeout(hideLoader, 1000);
 
 function money(n) {
   if (n === null || n === undefined) return 'Consultar';
@@ -2580,32 +2583,51 @@ productModal.addEventListener('click', (e) => {
   if (e.target === productModal) closeProductModal();
 });
 
-/* ---------- Carga Catálogo ---------- */
+/* ---------- Carga Catálogo con Timeout de Seguridad ---------- */
 function fetchCsv(url) {
   return new Promise((resolve) => {
     if (!url) return resolve([]);
+    let resolved = false;
+
+    // Si Google Sheets demora más de 5 segundos, continúa sin trabar la web
+    const timeout = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        resolve([]);
+      }
+    }, 5000);
+
     Papa.parse(url, {
       download: true,
       header: true,
       skipEmptyLines: true,
-      complete: (results) => resolve(results.data || []),
-      error: () => resolve([])
+      complete: (results) => {
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(timeout);
+          resolve(results.data || []);
+        }
+      },
+      error: () => {
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(timeout);
+          resolve([]);
+        }
+      }
     });
   });
 }
 
 async function loadFromSheet() {
   renderStatus('Cargando catálogo…');
-  
-  const minDelay = new Promise(resolve => setTimeout(resolve, 1400));
 
   try {
     const [plantRows, potRows, supplyRows, cactusRows] = await Promise.all([
       fetchCsv(CONFIG.SHEET_CSV_URL),
       fetchCsv(CONFIG.POTS_CSV_URL),
       fetchCsv(CONFIG.SUPPLIES_CSV_URL),
-      fetchCsv(CONFIG.CACTUS_CSV_URL),
-      minDelay
+      fetchCsv(CONFIG.CACTUS_CSV_URL)
     ]);
 
     const plants = plantRows.map(normalizePlantRow).filter(p => p.nombre);
@@ -2617,7 +2639,6 @@ async function loadFromSheet() {
 
     if (!PRODUCTS.length) {
       renderStatus('No se encontraron productos en las hojas de cálculo. Verificá que los datos estén publicados como CSV.');
-      hideLoader();
       return;
     }
 
@@ -2627,8 +2648,6 @@ async function loadFromSheet() {
     loadBannersFromSheet();
   } catch (err) {
     renderStatus('No se pudo conectar con las bases de datos de Google Sheets.');
-  } finally {
-    hideLoader();
   }
 }
 
