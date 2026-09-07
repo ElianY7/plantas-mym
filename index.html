@@ -23,6 +23,7 @@
     --ink-soft: #4F6873;
     --gold: #D8A25E;
     --gold-glow: rgba(216, 162, 94, 0.14);
+    --gold-luxury: #E5B36C;
     --rose: #C97064;
     --whatsapp: #25D366;
     --whatsapp-dark: #1DA851;
@@ -474,7 +475,7 @@
   .controls-wrap {
     position: relative;
     z-index: 1;
-    max-width: 840px;
+    max-width: 900px;
     margin: 0 auto 30px;
     padding: 0 20px;
     display: flex;
@@ -537,8 +538,18 @@
     background: rgba(216, 162, 94, 0.12);
   }
 
+  .cat-pill.pill-cactus {
+    border-color: rgba(229, 179, 108, 0.6);
+    background: linear-gradient(135deg, rgba(216, 162, 94, 0.15) 0%, rgba(34, 60, 71, 0.5) 100%);
+    color: #F8E7CE;
+  }
+  .cat-pill.pill-cactus:hover {
+    border-color: var(--gold-luxury);
+    box-shadow: 0 0 14px rgba(216, 162, 94, 0.3);
+  }
+
   /* ============================================================
-     SECCIÓN FIJA DE NOVEDADES (INDEPENDIENTE DEL CATÁLOGO)
+     SECCIÓN FIJA DE NOVEDADES
      ============================================================ */
   .novedades-wrapper {
     max-width: 1180px;
@@ -676,6 +687,90 @@
     color: rgba(244, 239, 230, 0.65);
   }
 
+  /* ============================================================
+     SECCIÓN PREMIUM: CACTUS DE COLECCIÓN (AL FINAL)
+     ============================================================ */
+  .category-section.cactus-coleccion-section {
+    position: relative;
+    background: linear-gradient(160deg, rgba(34, 60, 71, 0.85) 0%, rgba(17, 32, 38, 0.95) 100%);
+    border: 1.5px solid rgba(216, 162, 94, 0.45);
+    border-radius: 20px;
+    padding: 30px 26px 36px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4), 0 0 35px rgba(216, 162, 94, 0.12);
+    overflow: hidden;
+  }
+
+  .category-section.cactus-coleccion-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(216, 162, 94, 0.18) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .category-section.cactus-coleccion-section .category-header {
+    border-bottom: 1px solid rgba(216, 162, 94, 0.25);
+    position: relative;
+    z-index: 1;
+  }
+
+  .category-section.cactus-coleccion-section .category-title {
+    color: #FFF4E3;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  }
+
+  .category-section.cactus-coleccion-section .category-title .badge {
+    background: linear-gradient(135deg, #D8A25E 0%, #B88242 100%);
+    color: #14252C;
+    font-weight: 700;
+    border: none;
+    box-shadow: 0 2px 8px rgba(216, 162, 94, 0.4);
+  }
+
+  .category-section.cactus-coleccion-section .category-desc {
+    color: rgba(244, 239, 230, 0.85);
+  }
+
+  /* Tarjeta de Colección */
+  .card.is-cactus-collection {
+    border: 1.5px solid rgba(216, 162, 94, 0.35);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  }
+  .card.is-cactus-collection:hover {
+    border-color: var(--gold-luxury);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.45), 0 0 22px rgba(216, 162, 94, 0.35);
+  }
+
+  .card .coleccion-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(135deg, #E6B470 0%, #A97632 100%);
+    color: #14252C;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    z-index: 10;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
+  .pill.pill-cactus-luxury {
+    background: #FBF0E3 !important;
+    color: #8C4E19 !important;
+    border: 1px solid #D8A25E !important;
+    font-weight: 700 !important;
+    box-shadow: 0 1px 4px rgba(216, 162, 94, 0.18);
+  }
+
   /* ---------- Subfiltros Generales ---------- */
   .subcat-nav {
     display: flex;
@@ -712,6 +807,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 22px;
+    position: relative;
+    z-index: 1;
   }
 
   .card {
@@ -890,166 +987,33 @@
     line-height: 1.2;
   }
 
-  .pill.pill-plant-tropical {
-    background: #E5F6ED !important;
-    color: #0F5E37 !important;
-    border: 1px solid #8BD6B0 !important;
-    font-weight: 600 !important;
-  }
+  .pill.pill-plant-tropical { background: #E5F6ED !important; color: #0F5E37 !important; border: 1px solid #8BD6B0 !important; font-weight: 600 !important; }
+  .pill.pill-plant-floral { background: #FCE8EE !important; color: #9C1844 !important; border: 1px solid #F6B1C5 !important; font-weight: 600 !important; }
+  .pill.pill-plant-arbusto { background: #EAF1E7 !important; color: #2F5831 !important; border: 1px solid #B7CFB1 !important; font-weight: 600 !important; }
+  .pill.pill-plant-aromatica { background: #E0F3F1 !important; color: #00685D !important; border: 1px solid #82CBC4 !important; font-weight: 600 !important; }
+  .pill.pill-plant-cactus { background: #FBF0E3 !important; color: #8C4E19 !important; border: 1px solid #E6BD8D !important; font-weight: 600 !important; }
+  .pill.pill-plant-helecho { background: #E3F1E7 !important; color: #175436 !important; border: 1px solid #99CEAD !important; font-weight: 600 !important; }
+  .pill.pill-plant-enredadera { background: #E1F3F0 !important; color: #10594F !important; border: 1px solid #8ECEC2 !important; font-weight: 600 !important; }
+  .pill.pill-plant-frutal { background: #FFF1DF !important; color: #994B00 !important; border: 1px solid #FAC187 !important; font-weight: 600 !important; }
+  .pill.pill-plant-palmera { background: #FBF5DE !important; color: #735702 !important; border: 1px solid #E3CC74 !important; font-weight: 600 !important; }
+  .pill.pill-plant-default { background: #EDEAE3 !important; color: #3B4D45 !important; border: 1px solid #C9C4B6 !important; font-weight: 600 !important; }
 
-  .pill.pill-plant-floral {
-    background: #FCE8EE !important;
-    color: #9C1844 !important;
-    border: 1px solid #F6B1C5 !important;
-    font-weight: 600 !important;
-  }
+  .pill.pill-pot-premium { background: #FDF3DF !important; color: #824E05 !important; border: 1px solid #D8A25E !important; font-weight: 700 !important; }
+  .pill.pill-pot-roto { background: #E3ECEF !important; color: #173642 !important; border: 1px solid #8FAEC0 !important; font-weight: 600 !important; }
+  .pill.pill-pot-plastica { background: #E9ECE6 !important; color: #2F443B !important; border: 1px solid #C3CFCA !important; font-weight: 500 !important; }
 
-  .pill.pill-plant-arbusto {
-    background: #EAF1E7 !important;
-    color: #2F5831 !important;
-    border: 1px solid #B7CFB1 !important;
-    font-weight: 600 !important;
-  }
+  .pill.pill-insumo-tierra { background: #F4ECE1 !important; color: #614221 !important; border: 1px solid #C8B39B !important; font-weight: 600 !important; }
+  .pill.pill-insumo-fertilizante { background: #E4F4EC !important; color: #145934 !important; border: 1px solid #8DCAB0 !important; font-weight: 600 !important; }
+  .pill.pill-insumo-adorno { background: #F8E9E7 !important; color: #863636 !important; border: 1px solid #E1AAA5 !important; font-weight: 600 !important; }
 
-  .pill.pill-plant-aromatica {
-    background: #E0F3F1 !important;
-    color: #00685D !important;
-    border: 1px solid #82CBC4 !important;
-    font-weight: 600 !important;
-  }
+  .pill.pill-luz-alto { background: #FFF4DC !important; color: #794C05 !important; border: 1px solid #E8C182 !important; font-weight: 600 !important; }
+  .pill.pill-luz-medio { background: #ECEAE0 !important; color: #4A453A !important; border: 1px solid #CEC9BC !important; font-weight: 500 !important; }
+  .pill.pill-luz-bajo { background: #E1E6E8 !important; color: #283B43 !important; border: 1px solid #BAC6CB !important; font-weight: 500 !important; }
 
-  .pill.pill-plant-cactus {
-    background: #FBF0E3 !important;
-    color: #8C4E19 !important;
-    border: 1px solid #E6BD8D !important;
-    font-weight: 600 !important;
-  }
-
-  .pill.pill-plant-helecho {
-    background: #E3F1E7 !important;
-    color: #175436 !important;
-    border: 1px solid #99CEAD !important;
-    font-weight: 600 !important;
-  }
-
-  .pill.pill-plant-enredadera {
-    background: #E1F3F0 !important;
-    color: #10594F !important;
-    border: 1px solid #8ECEC2 !important;
-    font-weight: 600 !important;
-  }
-
-  .pill.pill-plant-frutal {
-    background: #FFF1DF !important;
-    color: #994B00 !important;
-    border: 1px solid #FAC187 !important;
-    font-weight: 600 !important;
-  }
-
-  .pill.pill-plant-palmera {
-    background: #FBF5DE !important;
-    color: #735702 !important;
-    border: 1px solid #E3CC74 !important;
-    font-weight: 600 !important;
-  }
-
-  .pill.pill-plant-default {
-    background: #EDEAE3 !important;
-    color: #3B4D45 !important;
-    border: 1px solid #C9C4B6 !important;
-    font-weight: 600 !important;
-  }
-
-  .pill.pill-pot-premium {
-    background: #FDF3DF !important;
-    color: #824E05 !important;
-    border: 1px solid #D8A25E !important;
-    font-weight: 700 !important;
-    box-shadow: 0 1px 4px rgba(216, 162, 94, 0.2);
-  }
-
-  .pill.pill-pot-roto {
-    background: #E3ECEF !important;
-    color: #173642 !important;
-    border: 1px solid #8FAEC0 !important;
-    font-weight: 600 !important;
-  }
-
-  .pill.pill-pot-plastica {
-    background: #E9ECE6 !important;
-    color: #2F443B !important;
-    border: 1px solid #C3CFCA !important;
-    font-weight: 500 !important;
-  }
-
-  .pill.pill-insumo-tierra {
-    background: #F4ECE1 !important;
-    color: #614221 !important;
-    border: 1px solid #C8B39B !important;
-    font-weight: 600 !important;
-  }
-
-  .pill.pill-insumo-fertilizante {
-    background: #E4F4EC !important;
-    color: #145934 !important;
-    border: 1px solid #8DCAB0 !important;
-    font-weight: 600 !important;
-  }
-
-  .pill.pill-insumo-adorno {
-    background: #F8E9E7 !important;
-    color: #863636 !important;
-    border: 1px solid #E1AAA5 !important;
-    font-weight: 600 !important;
-  }
-
-  .pill.pill-luz-alto {
-    background: #FFF4DC !important;
-    color: #794C05 !important;
-    border: 1px solid #E8C182 !important;
-    font-weight: 600 !important;
-  }
-
-  .pill.pill-luz-medio {
-    background: #ECEAE0 !important;
-    color: #4A453A !important;
-    border: 1px solid #CEC9BC !important;
-    font-weight: 500 !important;
-  }
-
-  .pill.pill-luz-bajo {
-    background: #E1E6E8 !important;
-    color: #283B43 !important;
-    border: 1px solid #BAC6CB !important;
-    font-weight: 500 !important;
-  }
-
-  .pill.pill-riego-alto {
-    background: #D5ECF8 !important;
-    color: #0A4363 !important;
-    border: 1px solid #84BEDE !important;
-    font-weight: 700 !important;
-  }
-
-  .pill.pill-riego-medio {
-    background: #E3EFF4 !important;
-    color: #1A4D62 !important;
-    border: 1px solid #A6C7D5 !important;
-    font-weight: 600 !important;
-  }
-
-  .pill.pill-riego-bajo {
-    background: #EEF5F7 !important;
-    color: #436674 !important;
-    border: 1px solid #CADFE6 !important;
-    font-weight: 500 !important;
-  }
-
-  .pill.pill-size {
-    background: #EBE5DA !important;
-    color: #4F6456 !important;
-    border: 1px solid #D7CFBE !important;
-  }
+  .pill.pill-riego-alto { background: #D5ECF8 !important; color: #0A4363 !important; border: 1px solid #84BEDE !important; font-weight: 700 !important; }
+  .pill.pill-riego-medio { background: #E3EFF4 !important; color: #1A4D62 !important; border: 1px solid #A6C7D5 !important; font-weight: 600 !important; }
+  .pill.pill-riego-bajo { background: #EEF5F7 !important; color: #436674 !important; border: 1px solid #CADFE6 !important; font-weight: 500 !important; }
+  .pill.pill-size { background: #EBE5DA !important; color: #4F6456 !important; border: 1px solid #D7CFBE !important; }
 
   .card .price-row {
     display: flex;
@@ -1117,6 +1081,8 @@
     display: flex;
     justify-content: center;
     margin-top: 24px;
+    position: relative;
+    z-index: 1;
   }
 
   .btn-toggle-more {
@@ -1573,6 +1539,11 @@
       display: none;
     }
 
+    .category-section.cactus-coleccion-section {
+      padding: 20px 14px 24px;
+      border-radius: 14px;
+    }
+
     .card.is-promo .price {
       font-size: 15px !important;
     }
@@ -1709,7 +1680,7 @@
 
 <div class="controls-wrap" id="controlsWrap">
   <div class="search-row">
-    <input type="text" id="searchInput" placeholder="Buscar por planta, maceta, tierra o abono…" aria-label="Buscar un producto">
+    <input type="text" id="searchInput" placeholder="Buscar por planta, cactus, maceta o sustrato…" aria-label="Buscar un producto">
   </div>
   <div class="category-nav" id="categoryNav">
     <button class="cat-pill active" data-cat="all">Todas</button>
@@ -1719,6 +1690,7 @@
     <button class="cat-pill" data-cat="interior">🪴 Interior</button>
     <button class="cat-pill" data-cat="macetas">🏺 Macetas</button>
     <button class="cat-pill" data-cat="tierras_adornos">🌱 Tierras y Adornos</button>
+    <button class="cat-pill pill-cactus" data-cat="cactus_coleccion">💎 Cactus de Colección</button>
   </div>
 </div>
 
@@ -1801,6 +1773,8 @@ const CONFIG = {
   SHEET_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=0&single=true&output=csv",
   POTS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=799011311&single=true&output=csv",
   SUPPLIES_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=1683874466&single=true&output=csv",
+  // 🌵 Agregá aquí el link CSV de tu pestaña de Cactus:
+  CACTUS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=TU_GID_DE_CACTUS&single=true&output=csv",
   BANNERS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=904731452&single=true&output=csv",
   WHATSAPP_NUMBER: "5493515605042",
   SHOP_NAME: "M&M",
@@ -1812,7 +1786,9 @@ const CATEGORIES_DEF = [
   { id: 'interior_exterior', name: 'Exterior/Interior', icon: '🏡', desc: 'Plantas versátiles que se adaptan tanto adentro como afuera.' },
   { id: 'interior', name: 'Interior', icon: '🪴', desc: 'Plantas de hojas vistosas para iluminar tus ambientes.' },
   { id: 'macetas', name: 'Macetas', icon: '🏺', desc: 'Macetas plásticas, jardineras, platos y accesorios.' },
-  { id: 'tierras_adornos', name: 'Tierras, Fertilizantes y Adornos', icon: '🌱', desc: 'Sustratos, abonos, fertilizantes y elementos para decorar tus plantas.' }
+  { id: 'tierras_adornos', name: 'Tierras, Fertilizantes y Adornos', icon: '🌱', desc: 'Sustratos, abonos, fertilizantes y elementos para decorar tus plantas.' },
+  // Se ubica al final con tratamiento premium
+  { id: 'cactus_coleccion', name: 'Cactus de Colección', icon: '💎', desc: 'Ejemplares exclusivos, injertados y piezas únicas para coleccionistas y apasionados.' }
 ];
 
 let PRODUCTS = [];
@@ -1827,12 +1803,19 @@ let activePlantSubcategories = {
 };
 let searchQuery = '';
 let currentModalProduct = null;
-let expandedCategories = { exterior: false, interior_exterior: false, interior: false, macetas: false, tierras_adornos: false };
+let expandedCategories = {
+  exterior: false,
+  interior_exterior: false,
+  interior: false,
+  macetas: false,
+  tierras_adornos: false,
+  cactus_coleccion: false
+};
 
 let currentSlide = 0;
 let carouselTimer = null;
 let novCarouselTimer = null;
-let novedadesRendered = false; // Bandera para no re-renderizar nunca el carrusel innecesariamente
+let novedadesRendered = false;
 
 function hideLoader() {
   const loader = document.getElementById('loaderScreen');
@@ -2055,6 +2038,51 @@ function normalizeSupplyRow(row) {
     luz: '',
     riego: '',
     cuidado: '',
+    hasStock: hasStock,
+    tipoDestacado: parseTipoDestacado(novRaw)
+  };
+}
+
+/* Normalización de la Hoja de Cactus de Colección */
+function normalizeCactusRow(row) {
+  const get = (keys) => {
+    for (const k of Object.keys(row)) {
+      const clean = k.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      if (keys.includes(clean)) return row[k];
+    }
+    return '';
+  };
+
+  const precioRaw = String(get(['precio','price']) || '').trim();
+  const soloDigitos = precioRaw.replace(/[^0-9]/g, '');
+  const esNoPublicado = /no\s*public|^np$|consult/i.test(precioRaw);
+  let precio = (!soloDigitos || esNoPublicado) ? null : parseInt(soloDigitos, 10);
+
+  const fotoUrl = get(['fotourl','urlfoto','linkfoto','foto_url']);
+  const fotoCruda = get(['foto','imagen','image','photo']);
+  const fotoOriginal = (fotoUrl || fotoCruda || '').trim();
+  
+  const stockVal = String(get(['stock']) || '').trim().toLowerCase();
+  const hasStock = stockVal !== 'no';
+
+  if (!hasStock) {
+    precio = null;
+  }
+
+  const novRaw = get(['novedad','novedades','promo','promocion','destacado']);
+
+  return {
+    nombre: (get(['nombre','producto','cactus','planta']) || '').trim(),
+    categoria: 'cactus_coleccion',
+    subcategoria: 'Cactus de Colección',
+    precio,
+    descripcion: (get(['descripcion','description','detalle','detalles']) || 'Ejemplar único seleccionado por su forma, injerto o rareza botánica. Ideal para coleccionistas.').trim(),
+    fotoOriginal: fotoOriginal,
+    foto: driveDirectLink(fotoOriginal, 400),
+    tamano: (get(['tamano','size','maceta','medida']) || '').trim(),
+    luz: (get(['luz','light']) || 'Pleno sol / Luz filtrada intensa').trim(),
+    riego: (get(['riego','watering']) || 'Muy bajo / Espaciado').trim(),
+    cuidado: (get(['cuidado','care']) || 'Sustrato con excelente drenaje').trim(),
     hasStock: hasStock,
     tipoDestacado: parseTipoDestacado(novRaw)
   };
@@ -2332,7 +2360,7 @@ function restartCarouselAuto() {
 }
 
 /* ============================================================
-   SECCIÓN DE NOVEDADES Y PROMOS: SE RENDERIZA UNA SOLA VEZ
+   SECCIÓN DE NOVEDADES Y PROMOS
    ============================================================ */
 function setupNovedadesSectionOnce() {
   const novContainer = document.getElementById('novedadesContainer');
@@ -2470,7 +2498,7 @@ function restartNovAutoScroll(numOriginalItems) {
   startNovAutoScroll(numOriginalItems);
 }
 
-/* ---------- Modal de Detalle (Carga en 1000px) ---------- */
+/* ---------- Modal de Detalle ---------- */
 const productModal = document.getElementById('productModal');
 
 function openProductModal(p) {
@@ -2505,7 +2533,14 @@ function openProductModal(p) {
   }
 
   let specsHtml = '';
-  if (p.categoria === 'macetas') {
+  if (p.categoria === 'cactus_coleccion') {
+    const luxTag = `<span class="pill pill-cactus-luxury">💎 Edición Colección</span>`;
+    const sizeTag = p.tamano ? `<span class="pill pill-size">🪴 Maceta: ${p.tamano}</span>` : '';
+    const luzTag = getLuzTagHtml(p.luz, true);
+    const riegoTag = getRiegoTagHtml(p.riego, true);
+    const cuidadoTag = p.cuidado ? `<span class="pill">🌱 Cuidado: ${p.cuidado}</span>` : '';
+    specsHtml = `${luxTag}${sizeTag}${luzTag}${riegoTag}${cuidadoTag}`;
+  } else if (p.categoria === 'macetas') {
     const potTag = getPotTagHtml(p.subcategoria);
     const sizeTag = p.tamano ? `<span class="pill pill-size">📏 Medida: ${p.tamano}</span>` : '';
     specsHtml = `${potTag}${sizeTag}`;
@@ -2548,7 +2583,7 @@ productModal.addEventListener('click', (e) => {
 /* ---------- Carga Catálogo ---------- */
 function fetchCsv(url) {
   return new Promise((resolve) => {
-    if (!url) return resolve([]);
+    if (!url || url.includes('TU_GID_DE_CACTUS')) return resolve([]);
     Papa.parse(url, {
       download: true,
       header: true,
@@ -2565,18 +2600,20 @@ async function loadFromSheet() {
   const minDelay = new Promise(resolve => setTimeout(resolve, 1400));
 
   try {
-    const [plantRows, potRows, supplyRows] = await Promise.all([
+    const [plantRows, potRows, supplyRows, cactusRows] = await Promise.all([
       fetchCsv(CONFIG.SHEET_CSV_URL),
       fetchCsv(CONFIG.POTS_CSV_URL),
       fetchCsv(CONFIG.SUPPLIES_CSV_URL),
+      fetchCsv(CONFIG.CACTUS_CSV_URL),
       minDelay
     ]);
 
     const plants = plantRows.map(normalizePlantRow).filter(p => p.nombre);
     const pots = potRows.map(normalizePotRow).filter(p => p.nombre);
     const supplies = supplyRows.map(normalizeSupplyRow).filter(p => p.nombre);
+    const cactus = cactusRows.map(normalizeCactusRow).filter(p => p.nombre);
 
-    PRODUCTS = [...plants, ...pots, ...supplies];
+    PRODUCTS = [...plants, ...pots, ...supplies, ...cactus];
 
     if (!PRODUCTS.length) {
       renderStatus('No se encontraron productos en las hojas de cálculo. Verificá que los datos estén publicados como CSV.');
@@ -2585,7 +2622,7 @@ async function loadFromSheet() {
     }
 
     renderStatus('');
-    setupNovedadesSectionOnce(); // Se crea el carrusel de novedades una única vez
+    setupNovedadesSectionOnce();
     renderCatalog();
     loadBannersFromSheet();
   } catch (err) {
@@ -2596,7 +2633,7 @@ async function loadFromSheet() {
 }
 
 /* ============================================================
-   RENDERIZADO DE CATEGORÍAS (SIN TOCAR EL CARRUSEL DE NOVEDADES)
+   RENDERIZADO DE CATEGORÍAS
    ============================================================ */
 function renderCatalog(anchorId = null) {
   const container = document.getElementById('catalogContainer');
@@ -2604,7 +2641,6 @@ function renderCatalog(anchorId = null) {
 
   const novContainer = document.getElementById('novedadesContainer');
 
-  // Visibilidad del carrusel de novedades según el filtro activo
   if (novContainer) {
     if (activeCategoryFilter === 'all' || activeCategoryFilter === 'novedades') {
       novContainer.style.display = 'block';
@@ -2613,7 +2649,6 @@ function renderCatalog(anchorId = null) {
     }
   }
 
-  // Si eligió específicamente la pestaña "Novedades y Promos"
   if (activeCategoryFilter === 'novedades') {
     container.innerHTML = '';
     return;
@@ -2679,14 +2714,15 @@ function renderCatalog(anchorId = null) {
 
     const isExpanded = expandedCategories[cat.id] || 
                        (q.length > 0) || 
-                       hasSubfilterActive;
+                       hasSubfilterActive ||
+                       cat.id === 'cactus_coleccion'; // Si es colección, siempre visible completa
 
     const visibleProducts = isExpanded 
       ? catProducts 
       : catProducts.slice(0, CONFIG.INITIAL_ITEMS_PER_CATEGORY);
 
     const section = document.createElement('section');
-    section.className = 'category-section';
+    section.className = `category-section ${cat.id === 'cactus_coleccion' ? 'cactus-coleccion-section' : ''}`;
     section.id = `cat-${cat.id}`;
 
     let subcats = [];
@@ -2719,13 +2755,13 @@ function renderCatalog(anchorId = null) {
         ` : ''}
       </div>
       <div class="grid" id="grid-${cat.id}"></div>
-      ${(!isExpanded && catProducts.length > CONFIG.INITIAL_ITEMS_PER_CATEGORY) ? `
+      ${(!isExpanded && catProducts.length > CONFIG.INITIAL_ITEMS_PER_CATEGORY && cat.id !== 'cactus_coleccion') ? `
         <div class="section-footer">
           <button type="button" class="btn-toggle-more" data-cat="${cat.id}">
             Ver más de ${cat.name} (+${catProducts.length - CONFIG.INITIAL_ITEMS_PER_CATEGORY}) ↓
           </button>
         </div>
-      ` : (isExpanded && catProducts.length > CONFIG.INITIAL_ITEMS_PER_CATEGORY && !q && !hasSubfilterActive) ? `
+      ` : (isExpanded && catProducts.length > CONFIG.INITIAL_ITEMS_PER_CATEGORY && !q && !hasSubfilterActive && cat.id !== 'cactus_coleccion') ? `
         <div class="section-footer">
           <button type="button" class="btn-toggle-more" data-cat="${cat.id}">
             Ver menos ↑
@@ -2806,10 +2842,13 @@ function createProductCard(p) {
   card.className = 'card';
   if (!p.hasStock) card.classList.add('out-of-stock');
   if (p.tipoDestacado === 'promo' && p.hasStock) card.classList.add('is-promo');
+  if (p.categoria === 'cactus_coleccion') card.classList.add('is-cactus-collection');
 
   let badgeHtml = '';
   if (!p.hasStock) {
     badgeHtml = `<div class="out-of-stock-badge">Sin stock</div>`;
+  } else if (p.categoria === 'cactus_coleccion') {
+    badgeHtml = `<div class="coleccion-badge">💎 Colección</div>`;
   } else if (p.tipoDestacado === 'promo') {
     badgeHtml = `<div class="promo-badge">🔥 Promo</div>`;
   } else if (p.tipoDestacado === 'novedad') {
@@ -2821,7 +2860,12 @@ function createProductCard(p) {
     : `<div class="photo-wrap noimg">${badgeHtml}Sin foto</div>`;
 
   let specsHtml = '';
-  if (p.categoria === 'macetas') {
+  if (p.categoria === 'cactus_coleccion') {
+    const luxTag = `<span class="pill pill-cactus-luxury">💎 Colección</span>`;
+    const sizeTag = p.tamano ? `<span class="pill pill-size">🪴 ${p.tamano}</span>` : '';
+    const luzTag = getLuzTagHtml(p.luz);
+    specsHtml = `<div class="specs">${luxTag}${sizeTag}${luzTag}</div>`;
+  } else if (p.categoria === 'macetas') {
     const potTag = getPotTagHtml(p.subcategoria);
     const sizeTag = p.tamano ? `<span class="pill pill-size">📏 ${p.tamano}</span>` : '';
     specsHtml = `<div class="specs">${potTag}${sizeTag}</div>`;
