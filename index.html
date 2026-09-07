@@ -347,7 +347,7 @@
   }
 
   /* ============================================================
-     EFECTO BLUR-UP & PLACEHOLDER SHIMMER EN IMÁGENES
+     EFECTO BLUR-UP & ENCUADRE DE FOTOS (CORREGIDO)
      ============================================================ */
   .card .photo-wrap,
   .modal-photo,
@@ -364,15 +364,20 @@
     100% { background-position: -200% 0; }
   }
 
+  /* Asegura que toda foto llene el marco cuadrado y quede perfectamente centrada */
   .card .photo-wrap img,
   .modal-photo img,
   .carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
     filter: blur(14px);
     opacity: 0.3;
     transform: scale(1.08);
-    transition: filter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
-                opacity 0.5s ease-out,
-                transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: filter 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
+                opacity 0.45s ease-out,
+                transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     will-change: filter, opacity, transform;
   }
 
@@ -730,7 +735,7 @@
   }
 
   /* ============================================================
-     SECCIÓN PREMIUM: CACTUS DE COLECCIÓN (AL FINAL)
+     SECCIÓN PREMIUM: CACTUS DE COLECCIÓN
      ============================================================ */
   .category-section.cactus-coleccion-section {
     position: relative;
@@ -966,7 +971,7 @@
 
   .card .photo-wrap {
     aspect-ratio: 1/1;
-    background: var(--paper-alt);
+    width: 100%;
     overflow: hidden;
     position: relative;
   }
