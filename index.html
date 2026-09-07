@@ -346,15 +346,57 @@
     justify-content: center;
   }
 
-  .carousel-slide img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-    transition: transform 0.3s ease;
+  /* ============================================================
+     EFECTO BLUR-UP & PLACEHOLDER SHIMMER EN IMÁGENES
+     ============================================================ */
+  .card .photo-wrap,
+  .modal-photo,
+  .carousel-slide {
+    background: linear-gradient(110deg, #172d36 8%, #24414d 18%, #172d36 33%);
+    background-size: 200% 100%;
+    animation: shimmerPlaceholder 1.8s infinite linear;
+    overflow: hidden;
+    position: relative;
   }
-  .carousel-slide:hover img { transform: scale(1.01); }
+
+  @keyframes shimmerPlaceholder {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .card .photo-wrap img,
+  .modal-photo img,
+  .carousel-slide img {
+    filter: blur(14px);
+    opacity: 0.3;
+    transform: scale(1.08);
+    transition: filter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+                opacity 0.5s ease-out,
+                transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: filter, opacity, transform;
+  }
+
+  .card .photo-wrap img.loaded,
+  .modal-photo img.loaded,
+  .carousel-slide img.loaded {
+    filter: blur(0);
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .card:hover .photo-wrap img.loaded {
+    transform: scale(1.05);
+  }
+
+  .carousel-slide:hover img.loaded {
+    transform: scale(1.01);
+  }
+
+  .card .photo-wrap.noimg,
+  .modal-photo.noimg {
+    animation: none;
+    background: var(--paper-alt);
+  }
 
   .carousel-btn {
     position: absolute;
@@ -735,7 +777,6 @@
     color: rgba(244, 239, 230, 0.85);
   }
 
-  /* Tarjeta de Colección */
   .card.is-cactus-collection {
     border: 1.5px solid rgba(216, 162, 94, 0.35);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
@@ -929,13 +970,6 @@
     overflow: hidden;
     position: relative;
   }
-  .card .photo-wrap img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  }
-  .card:hover .photo-wrap img { transform: scale(1.05); }
 
   .card .photo-wrap.noimg {
     display: flex;
@@ -1168,15 +1202,6 @@
     position: relative;
     height: 100%;
     min-height: 280px;
-  }
-  .modal-photo img { width: 100%; height: 100%; object-fit: cover; }
-  .modal-photo.noimg {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--ink-soft);
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
   }
 
   .modal-content-wrap {
@@ -1694,7 +1719,7 @@
   </div>
 </div>
 
-<!-- Contenedor dedicado y aislado para Novedades y Promos -->
+<!-- Contenedor de Novedades y Promos -->
 <div class="novedades-wrapper" id="novedadesContainer" style="display:none;"></div>
 
 <main>
@@ -1773,8 +1798,7 @@ const CONFIG = {
   SHEET_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=0&single=true&output=csv",
   POTS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=799011311&single=true&output=csv",
   SUPPLIES_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=1683874466&single=true&output=csv",
-  // 🌵 Agregá aquí el link CSV de tu pestaña de Cactus:
-  CACTUS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=TU_GID_DE_CACTUS&single=true&output=csv",
+  CACTUS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=1968794791&single=true&output=csv",
   BANNERS_CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcVGLPoweF_Uid76I0k-0ey_PtRVYHjqVbzw5LeTww_M6uhoe0gY1chNQoaiHRg9Qc_d_WhHELVQQd/pub?gid=904731452&single=true&output=csv",
   WHATSAPP_NUMBER: "5493515605042",
   SHOP_NAME: "M&M",
@@ -1787,7 +1811,6 @@ const CATEGORIES_DEF = [
   { id: 'interior', name: 'Interior', icon: '🪴', desc: 'Plantas de hojas vistosas para iluminar tus ambientes.' },
   { id: 'macetas', name: 'Macetas', icon: '🏺', desc: 'Macetas plásticas, jardineras, platos y accesorios.' },
   { id: 'tierras_adornos', name: 'Tierras, Fertilizantes y Adornos', icon: '🌱', desc: 'Sustratos, abonos, fertilizantes y elementos para decorar tus plantas.' },
-  // Se ubica al final con tratamiento premium
   { id: 'cactus_coleccion', name: 'Cactus de Colección', icon: '💎', desc: 'Ejemplares exclusivos, injertados y piezas únicas para coleccionistas y apasionados.' }
 ];
 
@@ -2043,7 +2066,6 @@ function normalizeSupplyRow(row) {
   };
 }
 
-/* Normalización de la Hoja de Cactus de Colección */
 function normalizeCactusRow(row) {
   const get = (keys) => {
     for (const k of Object.keys(row)) {
@@ -2289,7 +2311,7 @@ function initPromoCarousel(banners) {
       });
     }
 
-    slide.innerHTML = `<img src="${banner.foto}" alt="Banner promocional" fetchpriority="${i === 0 ? 'high' : 'auto'}" loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async">`;
+    slide.innerHTML = `<img src="${banner.foto}" alt="Banner promocional" fetchpriority="${i === 0 ? 'high' : 'auto'}" loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async" onload="this.classList.add('loaded')">`;
     track.appendChild(slide);
 
     const dot = document.createElement('button');
@@ -2516,7 +2538,7 @@ function openProductModal(p) {
 
   if (p.foto || p.fotoOriginal) {
     photoEl.className = 'modal-photo';
-    photoEl.innerHTML = `<img src="${modalImgSrc}" alt="${p.nombre}" decoding="async">`;
+    photoEl.innerHTML = `<img src="${modalImgSrc}" alt="${p.nombre}" decoding="async" onload="this.classList.add('loaded')">`;
   } else {
     photoEl.className = 'modal-photo noimg';
     photoEl.textContent = 'Sin foto';
@@ -2583,7 +2605,7 @@ productModal.addEventListener('click', (e) => {
 /* ---------- Carga Catálogo ---------- */
 function fetchCsv(url) {
   return new Promise((resolve) => {
-    if (!url || url.includes('TU_GID_DE_CACTUS')) return resolve([]);
+    if (!url) return resolve([]);
     Papa.parse(url, {
       download: true,
       header: true,
@@ -2715,7 +2737,7 @@ function renderCatalog(anchorId = null) {
     const isExpanded = expandedCategories[cat.id] || 
                        (q.length > 0) || 
                        hasSubfilterActive ||
-                       cat.id === 'cactus_coleccion'; // Si es colección, siempre visible completa
+                       cat.id === 'cactus_coleccion';
 
     const visibleProducts = isExpanded 
       ? catProducts 
@@ -2856,7 +2878,7 @@ function createProductCard(p) {
   }
 
   const photoHtml = p.foto
-    ? `<div class="photo-wrap">${badgeHtml}<img src="${p.foto}" alt="${p.nombre}" loading="lazy" decoding="async" onerror="this.parentElement.classList.add('noimg'); this.remove(); this.parentElement.textContent='Sin foto';"></div>`
+    ? `<div class="photo-wrap">${badgeHtml}<img src="${p.foto}" alt="${p.nombre}" loading="lazy" decoding="async" onload="this.classList.add('loaded')" onerror="this.parentElement.classList.add('noimg'); this.remove(); this.parentElement.textContent='Sin foto';"></div>`
     : `<div class="photo-wrap noimg">${badgeHtml}Sin foto</div>`;
 
   let specsHtml = '';
